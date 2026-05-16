@@ -1,6 +1,6 @@
 {
-  "name": "pi-gnosis",
-  "version": "0.2.0",
+  "name": "@darkhorseprojects/pi-gnosis",
+  "version": "0.1.0",
   "description": "Circuitry-first Pi package for source-grounded research, non-linear tutoring, Obsidian learning memory, and Manim lecture generation.",
   "type": "module",
   "license": "Apache-2.0",
