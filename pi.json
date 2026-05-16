@@ -1,7 +1,7 @@
 {
   "name": "pi-gnosis",
   "package": "pi-gnosis",
-  "version": "0.2.0",
+  "version": "0.1.3",
   "kind": "pi-package",
   "description": "Circuitry-first Pi package that turns research and tutoring plans into executable Circuitry graph programs.",
   "dependsOn": {

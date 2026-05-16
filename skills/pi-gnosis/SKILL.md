@@ -49,6 +49,22 @@ For research graph nodes, prefer the package tools from `pi-web-access`: `web_se
 
 Before any non-read-only work, require the graph agent to state the target root and output manifest. After non-read-only runs, run or offer the cleanup graph. Cleanup is plan-first and may delete only safe temporary files unless the user explicitly authorizes more.
 
+## User configuration
+
+Pi-GNOSIS supports user-level configuration at `~/.pi/pi-gnosis.json`. This file is NOT overwritten on updates.
+
+```json
+{
+  "paths": {
+    "obsidianRoot": "/path/to/your/obsidian/vault",
+    "dagStateRoot": ".pi-gnosis/state",
+    "manimRoot": "manim"
+  }
+}
+```
+
+Only override paths you want to change from the package defaults. Missing keys fall back to package config.
+
 ## Manim
 
 For video output, run the Manim graph. The relevant agent must include `skills: [pi-gnosis, manim-video]`, so it can read the bundled Manim skill. Generate projects under the configured Manim root. Rendering requires local Manim CE, LaTeX, and ffmpeg; if unavailable, return a runnable project and clear preflight report.

@@ -1,14 +1,40 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { homedir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = resolve(__dirname, '..');
 const CONFIG_PATH = resolve(PACKAGE_ROOT, 'config/gnosis.config.json');
+const USER_CONFIG_PATH = resolve(homedir(), '.pi/pi-gnosis.json');
 
-export function loadConfig(path = CONFIG_PATH) {
+function deepMerge(target, source) {
+  if (!source) return target;
+  const result = { ...target };
+  for (const key of Object.keys(source)) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(result[key] || {}, source[key]);
+    } else {
+      result[key] = source[key];
+    }
+  }
+  return result;
+}
+
+export function loadConfig(path = CONFIG_PATH, loadUser = true) {
   const raw = readFileSync(path, 'utf8');
-  const config = JSON.parse(raw);
+  let config = JSON.parse(raw);
+
+  if (loadUser && existsSync(USER_CONFIG_PATH)) {
+    try {
+      const userRaw = readFileSync(USER_CONFIG_PATH, 'utf8');
+      const userConfig = JSON.parse(userRaw);
+      config = deepMerge(config, userConfig);
+    } catch {
+      // Ignore user config errors, fall back to package config
+    }
+  }
+
   if (config?.runtime?.provider !== 'pi') {
     throw new Error('Pi-GNOSIS config must use runtime.provider = pi');
   }
@@ -16,6 +42,18 @@ export function loadConfig(path = CONFIG_PATH) {
     throw new Error('Pi-GNOSIS config must default runtime.model = inherit');
   }
   return config;
+}
+
+export function loadUserConfig() {
+  if (existsSync(USER_CONFIG_PATH)) {
+    try {
+      const raw = readFileSync(USER_CONFIG_PATH, 'utf8');
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 export function packageRoot() {
