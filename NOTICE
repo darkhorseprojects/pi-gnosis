@@ -1,0 +1,7 @@
+Pi-GNOSIS NOTICE
+
+This package depends on DarkHorseProjects pi-circuitry and the transitive Circuitry runtime/spec.
+
+The bundled Manim skill is an original local skill inspired by Nous Research / Hermes Agent's public "Manim Video" skill documentation. It is not an official Hermes skill release, and this package does not depend on Hermes Agent. Credit: Nous Research / Hermes Agent documentation, "Manim Video - Manim CE animations: 3Blue1Brown math/algo videos".
+
+The research framework references public academic work on automated literature review generation, agentic RAG, intelligent tutoring systems, knowledge tracing, retrieval practice, and automated short-answer grading. See framework/research-foundations.md.

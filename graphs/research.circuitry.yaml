@@ -1,0 +1,309 @@
+circuitry: "0.2"
+title: "Pi-GNOSIS Research Program"
+description: |
+  Frozen Circuitry program for delegated source-grounded research. The graph is the multi-agent workflow: scope, query planning, source discovery, fetching, claim extraction, critique, and KT-DAG seeding.
+runtime:
+  provider: pi
+  model: inherit
+validation:
+  rules:
+    - no-self-loops
+    - no-unknown-edge-endpoints
+    - no-cycles
+    - rule: require-executable-inputs
+      executableKinds: [agent, tool]
+resources:
+  user_request:
+    type: text
+    label: "Learning/research request"
+    value: |
+      topic: "automated research pipelines and agentic tutors"
+      purpose: "learn"
+      output_modes: ["dag_state", "obsidian_notes"]
+      note_path: "notes"
+      dag_state_path: ".pi-gnosis/state"
+      depth: "working"
+      learner_context: ""
+      constraints: ""
+      apply_writes: false
+  package_config:
+    type: text
+    label: "Pi-GNOSIS config snapshot"
+    value: |
+      package: pi-gnosis
+      circuitry: "0.2"
+      runtime_provider: pi
+      model: inherit
+      required_tools: [web_search, fetch_content]
+      optional_tools: [exa_search]
+      required_dependency: pi-web-access
+      optional_dependency: pi-exa-search
+  research_policy:
+    type: text
+    label: "Research policy"
+    value: |
+      Use source-ledger and claim-ledger thinking. Prefer primary papers, official docs, standards, textbook-like references, systematic reviews, and repo documentation. Separate evidence, interpretation, disagreement, and speculation. Do not use popularity as truth. Do not hide uncertainty.
+  learning_policy:
+    type: text
+    label: "Learning policy"
+    value: |
+      The learner may stop, resume, or jump topics. Build reusable state, not a one-shot explanation. Prefer open-ended probes and teach-back evidence. Never generate multiple-choice diagnostic probes.
+  storage_contract:
+    type: text
+    label: "Storage contract"
+    value: |
+      DAG state is canonical: source ledgers, claim ledgers, KT DAG, learner state, probe outcomes, review schedules, and manifests. Obsidian is learner-facing memory: notes, links, reflections, and study prompts.
+  prior_knowledge_audit:
+    type: agent
+    identity: "Prior Knowledge Auditor"
+    model: inherit
+    inputs: [user_request, learning_policy, storage_contract]
+    skills: [pi-gnosis]
+    tools: [read_file, grep]
+    expect:
+      note_evidence:
+        type: list
+        items:
+          path: str
+          evidence: str
+      inferred_prior_knowledge:
+        type: list
+        items: str
+      stale_or_missing_areas:
+        type: list
+        items: str
+      confidence: str
+    instructions: |
+      Read only if note paths or prior DAG state are available. Infer prior knowledge only from user-provided context, existing notes, or prior state. If no readable notes exist, say so. Output only valid JSON matching expect.
+  scope_architect:
+    type: agent
+    identity: "Research Scope Architect"
+    model: inherit
+    inputs: [user_request, package_config, research_policy, learning_policy, prior_knowledge_audit]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      scope: str
+      key_questions:
+        type: list
+        items: str
+      prerequisites:
+        type: list
+        items: str
+      likely_controversies:
+        type: list
+        items: str
+      source_targets:
+        type: list
+        items: str
+      invalid_shortcuts:
+        type: list
+        items: str
+    instructions: |
+      Convert the user request into a research scope. Identify prerequisite concepts, source classes, high-risk claims, and things not to conclude without evidence. This is a planning node; do not browse here. Output only valid JSON matching expect.
+  query_planner:
+    type: agent
+    identity: "Search Query Planner"
+    model: inherit
+    inputs: [scope_architect, research_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      exa_queries:
+        type: list
+        items: str
+      web_queries:
+        type: list
+        items: str
+      official_docs_targets:
+        type: list
+        items: str
+      scholar_targets:
+        type: list
+        items: str
+      exclusion_filters:
+        type: list
+        items: str
+    instructions: |
+      Produce multiple independent queries. Include fresh/recent queries when the subject is changing. Include official repo/docs queries for software dependencies. Include academic queries for pedagogy and research workflows. Output only valid JSON matching expect.
+  source_discovery:
+    type: agent
+    identity: "Source Discovery Agent"
+    model: inherit
+    inputs: [query_planner, package_config]
+    skills: [pi-gnosis, exa-web-research, librarian]
+    tools: [exa_search, web_search]
+    expect:
+      candidate_sources:
+        type: list
+        items:
+          id: str
+          title: str
+          url: str
+          source_type: str
+          reason: str
+          priority: int
+      rejected_patterns:
+        type: list
+        items: str
+      search_log:
+        type: list
+        items: str
+    instructions: |
+      Use exa_search first when available for source discovery. Use web_search when Exa is unavailable or when broad/fresh search is better. Do not synthesize the answer. Return candidate URLs, why they matter, and rejected source patterns. Output only valid JSON matching expect.
+  source_fetcher:
+    type: agent
+    identity: "Source Fetch and Extract Agent"
+    model: inherit
+    inputs: [source_discovery, research_policy]
+    skills: [pi-gnosis, librarian]
+    tools: [fetch_content, web_search]
+    expect:
+      fetched_sources:
+        type: list
+        items:
+          id: str
+          title: str
+          url: str
+          date: str
+          author_or_org: str
+          extracted_summary: str
+          limitations: str
+      unavailable_sources:
+        type: list
+        items:
+          url: str
+          reason: str
+    instructions: |
+      Fetch the highest-priority sources with fetch_content. If a source cannot be fetched, record that plainly. Preserve URLs and dates where available. Do not invent metadata. Output only valid JSON matching expect.
+  source_ledger_builder:
+    type: agent
+    identity: "Source Ledger Builder"
+    model: inherit
+    inputs: [source_fetcher, research_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      source_ledger:
+        type: list
+        items:
+          id: str
+          source: str
+          source_type: str
+          date: str
+          reliability_notes: str
+          useful_for:
+            type: list
+            items: str
+          caveats: str
+      missing_source_classes:
+        type: list
+        items: str
+    instructions: |
+      Convert fetched sources into a source ledger. Classify official docs, primary research, benchmark/evaluation, review/survey, tooling repo, commentary, or tutorial. Output only valid JSON matching expect.
+  claim_extractor:
+    type: agent
+    identity: "Claim Ledger Extractor"
+    model: inherit
+    inputs: [source_ledger_builder, scope_architect]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      claims:
+        type: list
+        items:
+          id: str
+          claim: str
+          source_ids:
+            type: list
+            items: str
+          confidence: str
+          disagreement: str
+          implications_for_pi_gnosis: str
+      definitions:
+        type: list
+        items:
+          term: str
+          definition: str
+          source_ids:
+            type: list
+            items: str
+      open_questions:
+        type: list
+        items: str
+    instructions: |
+      Extract atomic claims and definitions. Every claim must cite source ids from the source ledger or be marked as a hypothesis. Separate consensus from disagreement. Output only valid JSON matching expect.
+  synthesis_critic:
+    type: agent
+    identity: "Synthesis Critic"
+    model: inherit
+    inputs: [claim_extractor, source_ledger_builder, research_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      unsupported_or_weak_claims:
+        type: list
+        items: str
+      missing_counterevidence:
+        type: list
+        items: str
+      stale_risk:
+        type: list
+        items: str
+      pass_conditions:
+        type: list
+        items: str
+      verdict: str
+    instructions: |
+      Audit the claim ledger. Flag unsupported claims, missing source classes, stale evidence, and overbroad synthesis. This is a quality gate before teaching artifacts. Output only valid JSON matching expect.
+  kt_dag_seed_builder:
+    type: agent
+    identity: "KT DAG Seed Builder"
+    model: inherit
+    inputs: [claim_extractor, synthesis_critic, prior_knowledge_audit, learning_policy, storage_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      kt_dag:
+        type: dict
+      concept_nodes:
+        type: list
+        items:
+          id: str
+          label: str
+          prerequisites:
+            type: list
+            items: str
+          evidence_source_ids:
+            type: list
+            items: str
+          misconception_risk: int
+          decay_risk: int
+      learner_state_update:
+        type: dict
+      recommended_next_graphs:
+        type: list
+        items: str
+    instructions: |
+      Build a transparent KT DAG seed: concepts, prerequisite edges, contrast edges, misconception risks, decay risks, and learner evidence. Do not mark mastery without open-ended evidence. Recommend follow-up graphs, such as tutoring-session, note-export, or manim-lecture. Output only valid JSON matching expect.
+  research_output_manifest:
+    type: agent
+    identity: "Research Output Manifest Writer"
+    model: inherit
+    inputs: [source_ledger_builder, claim_extractor, synthesis_critic, kt_dag_seed_builder, storage_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      dag_state_files_to_write:
+        type: list
+        items: str
+      obsidian_exports_to_offer:
+        type: list
+        items: str
+      temp_artifacts:
+        type: list
+        items: str
+      cleanup_graph_recommended: bool
+      summary_for_pi: str
+    instructions: |
+      Produce a manifest for the main Pi agent. Do not write files in this graph unless explicitly instructed by Pi runtime policy. Include a cleanup recommendation for temporary artifacts. Output only valid JSON matching expect.

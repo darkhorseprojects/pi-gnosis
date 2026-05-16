@@ -1,0 +1,81 @@
+{
+  "name": "pi-gnosis",
+  "version": "0.2.0",
+  "description": "Circuitry-first Pi package for source-grounded research, non-linear tutoring, Obsidian learning memory, and Manim lecture generation.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "private": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "pi-package",
+    "pi",
+    "circuitry",
+    "agentic-workflow",
+    "research",
+    "tutoring",
+    "knowledge-tracing",
+    "obsidian",
+    "manim"
+  ],
+  "bin": {
+    "pi-gnosis": "./bin/pi-gnosis.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./config": "./src/config.js",
+    "./graph-template": "./src/graph-template.js",
+    "./validator": "./src/graph-validator.js",
+    "./scheduler": "./src/review-scheduler.js",
+    "./storage-contract": "./src/storage-contract.js",
+    "./probe-policy": "./src/probe-policy.js",
+    "./cleanup-policy": "./src/cleanup-policy.js",
+    "./manim-project": "./src/manim-project.js"
+  },
+  "files": [
+    "bin/",
+    "config/",
+    "graphs/",
+    "skills/",
+    "framework/",
+    "src/",
+    "scripts/",
+    "examples/",
+    "README.md",
+    "pi.json",
+    "NOTICE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node test/run-tests.js && python3 scripts/check-circuitry-v02.py graphs/*.circuitry.yaml && npm pack --dry-run > /tmp/pi-gnosis-pack.txt",
+    "test:node": "node test/run-tests.js",
+    "test:graphs": "python3 scripts/check-circuitry-v02.py graphs/*.circuitry.yaml",
+    "validate:graphs": "python3 scripts/check-circuitry-v02.py graphs/*.circuitry.yaml",
+    "list:graphs": "node bin/pi-gnosis.js graphs"
+  },
+  "dependencies": {
+    "@darkhorseprojects/pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.6",
+    "pi-web-access": "^0.10.7"
+  },
+  "optionalDependencies": {
+    "pi-exa-search": "github:najibninaba/pi-exa-search#main"
+  },
+  "peerDependencies": {
+    "@darkhorseprojects/circuitry-core": ">=0.2.6"
+  },
+  "peerDependenciesMeta": {
+    "@darkhorseprojects/circuitry-core": {
+      "optional": true
+    }
+  },
+  "pi": {
+    "skills": [
+      "./skills"
+    ],
+    "graphs": [
+      "./graphs"
+    ],
+    "config": "./config/gnosis.config.json"
+  }
+}

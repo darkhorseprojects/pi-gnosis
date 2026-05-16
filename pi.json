@@ -1,0 +1,42 @@
+{
+  "name": "pi-gnosis",
+  "package": "pi-gnosis",
+  "version": "0.2.0",
+  "kind": "pi-package",
+  "description": "Circuitry-first Pi package that turns research and tutoring plans into executable Circuitry graph programs.",
+  "dependsOn": {
+    "pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.6",
+    "circuitry": "transitive through pi-circuitry",
+    "pi-web-access": "npm:pi-web-access@^0.10.7",
+    "pi-exa-search": "optional github:najibninaba/pi-exa-search#main"
+  },
+  "runtimeDefaults": {
+    "provider": "pi",
+    "model": "inherit"
+  },
+  "entrypoints": {
+    "skill": "skills/pi-gnosis/SKILL.md",
+    "manimSkill": "skills/manim-video/SKILL.md",
+    "config": "config/gnosis.config.json",
+    "graphs": {
+      "research": "graphs/research.circuitry.yaml",
+      "tutoringSession": "graphs/tutoring-session.circuitry.yaml",
+      "noteExport": "graphs/note-export.circuitry.yaml",
+      "manimLecture": "graphs/manim-lecture.circuitry.yaml",
+      "cleanup": "graphs/cleanup.circuitry.yaml",
+      "smoke": "graphs/minimal-smoke.circuitry.yaml"
+    },
+    "cli": "bin/pi-gnosis.js"
+  },
+  "capabilities": [
+    "circuitry-graph-programs",
+    "source-grounded-research",
+    "web-search-via-pi-web-access",
+    "optional-exa-source-discovery",
+    "open-ended-diagnostic-probing",
+    "knowledge-tracing-dag-state",
+    "obsidian-compatible-note-export",
+    "manim-lecture-generation",
+    "safe-cleanup-planning"
+  ]
+}

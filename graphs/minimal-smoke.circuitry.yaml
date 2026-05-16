@@ -1,0 +1,32 @@
+circuitry: "0.2"
+title: "Pi-GNOSIS Minimal Smoke Program"
+description: "Small Circuitry graph for validating provider, model inheritance, resource inputs, skill loading, and expected JSON output."
+runtime:
+  provider: pi
+  model: inherit
+validation:
+  rules:
+    - no-self-loops
+    - no-unknown-edge-endpoints
+    - no-cycles
+    - rule: require-executable-inputs
+      executableKinds: [agent, tool]
+resources:
+  smoke_request:
+    type: text
+    value: |
+      Verify pi-gnosis graph wiring. Do not browse. Do not write files.
+  smoke_agent:
+    type: agent
+    identity: "Pi-GNOSIS Smoke Agent"
+    model: inherit
+    inputs: [smoke_request]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      status: str
+      provider: str
+      model: str
+      note: str
+    instructions: |
+      Return a tiny JSON object confirming that this graph uses provider pi and model inherit. Output only valid JSON matching expect.

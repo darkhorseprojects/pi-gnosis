@@ -1,0 +1,130 @@
+circuitry: "0.2"
+title: "Pi-GNOSIS Tutoring Session Program"
+description: |
+  Frozen Circuitry program for one non-linear tutoring turn. It reads DAG/notes evidence, chooses an open-ended probe or explanation, updates learner state, and tells Pi whether to continue, pause, export notes, or switch modality.
+runtime:
+  provider: pi
+  model: inherit
+validation:
+  rules:
+    - no-self-loops
+    - no-unknown-edge-endpoints
+    - no-cycles
+    - rule: require-executable-inputs
+      executableKinds: [agent, tool]
+resources:
+  session_context:
+    type: text
+    label: "Session context"
+    value: |
+      topic: ""
+      learner_message: ""
+      dag_state_path: ".pi-gnosis/state"
+      note_path: "notes"
+      preferred_mode: "pi decides"
+      user_may_quit_any_time: true
+  tutoring_policy:
+    type: text
+    label: "Tutoring policy"
+    value: |
+      This is non-linear. The learner may stop, resume, jump ahead, ask for a video, ask for notes, or change goals. Ask at most one modality or preference question when needed. Never use multiple-choice diagnostic probes. Use open-ended evidence to update KT state.
+  kt_policy:
+    type: text
+    label: "KT policy"
+    value: |
+      Maintain an explainable KT DAG. Store evidence records rather than opaque mastery labels. Concepts can have prerequisite, contrast, misconception, analogy, and transfer edges. Move on only when evidence supports it or when the user requests a different path.
+  learner_state_reader:
+    type: agent
+    identity: "Learner State Reader"
+    model: inherit
+    inputs: [session_context, kt_policy]
+    skills: [pi-gnosis]
+    tools: [read_file, grep]
+    expect:
+      relevant_concepts:
+        type: list
+        items: str
+      evidence_found:
+        type: list
+        items: str
+      uncertain_state:
+        type: list
+        items: str
+      recommended_focus: str
+    instructions: |
+      Read available DAG state and Obsidian notes if paths exist. Summarize only evidence relevant to the current learner message. If no state exists, report empty state. Output only valid JSON matching expect.
+  turn_intent_router:
+    type: agent
+    identity: "Turn Intent Router"
+    model: inherit
+    inputs: [session_context, learner_state_reader, tutoring_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      user_intent: str
+      should_teach_now: bool
+      should_probe_now: bool
+      should_offer_modality_choice: bool
+      should_pause_or_resume: str
+      recommended_graph_after_turn: str
+    instructions: |
+      Decide what Pi should do next: explain, probe, ask one modality question, resume from notes, export notes, create a Manim lecture, or pause. Do not force a linear curriculum. Output only valid JSON matching expect.
+  open_probe_designer:
+    type: agent
+    identity: "Open Probe Designer"
+    model: inherit
+    inputs: [learner_state_reader, turn_intent_router, tutoring_policy, kt_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      probes:
+        type: list
+        items:
+          type: str
+          prompt: str
+          targeted_concepts:
+            type: list
+            items: str
+          rubric: str
+          answer_key_visibility: str
+      forbidden_formats_checked: bool
+    instructions: |
+      If probing is appropriate, write short open-ended prompts only. Allowed types include recall, explain, transfer, contrast, debug, teach-back, source-check, and worked example. Recognition-only formats are forbidden. Output only valid JSON matching expect.
+  teaching_move_planner:
+    type: agent
+    identity: "Teaching Move Planner"
+    model: inherit
+    inputs: [learner_state_reader, turn_intent_router, open_probe_designer, tutoring_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      next_pi_message: str
+      explanation_strategy: str
+      scaffold_level: str
+      what_not_to_reveal_yet:
+        type: list
+        items: str
+      user_exit_paths:
+        type: list
+        items: str
+    instructions: |
+      Draft Pi's next conversational move. Keep it natural. If asking a probe, do not include the answer before the learner responds. If explaining, include a concrete example and ask for a short teach-back. Output only valid JSON matching expect.
+  state_update_writer:
+    type: agent
+    identity: "Learner State Update Writer"
+    model: inherit
+    inputs: [learner_state_reader, turn_intent_router, open_probe_designer, teaching_move_planner, kt_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      learner_state_patch:
+        type: dict
+      evidence_to_wait_for:
+        type: list
+        items: str
+      next_review_or_probe_targets:
+        type: list
+        items: str
+      output_manifest: dict
+    instructions: |
+      Produce a state patch to be saved by Pi if appropriate. Do not claim the learner knows a concept until evidence exists. Include what evidence to wait for after Pi sends the next message. Output only valid JSON matching expect.

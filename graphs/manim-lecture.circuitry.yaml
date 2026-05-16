@@ -1,0 +1,137 @@
+circuitry: "0.2"
+title: "Pi-GNOSIS Manim Lecture Program"
+description: |
+  Frozen Circuitry program for generating a Manim CE lecture project from researched/KT state. The Manim-producing agent directly loads the bundled manim-video skill.
+runtime:
+  provider: pi
+  model: inherit
+validation:
+  rules:
+    - no-self-loops
+    - no-unknown-edge-endpoints
+    - no-cycles
+    - rule: require-executable-inputs
+      executableKinds: [agent, tool]
+resources:
+  lecture_request:
+    type: text
+    label: "Lecture request"
+    value: |
+      topic: ""
+      dag_state_path: ".pi-gnosis/state"
+      output_root: "manim"
+      render: "draft-if-environment-ready"
+      apply_writes: false
+  manim_policy:
+    type: text
+    label: "Manim side-effect policy"
+    value: |
+      Use the bundled manim-video skill. Write only inside output_root. Produce plan.md, scene_spec.json, script.py, render.sh, and README.md. Do not delete anything. Mark media/ as cleanup-eligible only after final outputs are preserved.
+  visual_learning_policy:
+    type: text
+    label: "Visual learning policy"
+    value: |
+      A lecture should have one narrative arc, one misconception or bottleneck to fix, and a small number of scenes. Prefer visual structure over text dumps. The aha moment should be visible.
+  lecture_state_importer:
+    type: agent
+    identity: "Lecture State Importer"
+    model: inherit
+    inputs: [lecture_request, visual_learning_policy]
+    skills: [pi-gnosis]
+    tools: [read_file, grep]
+    expect:
+      usable_concepts:
+        type: list
+        items: str
+      source_ids_to_carry:
+        type: list
+        items: str
+      learner_bottlenecks:
+        type: list
+        items: str
+      missing_state:
+        type: list
+        items: str
+    instructions: |
+      Read DAG state when available. Extract concepts, misconceptions, source ids, and learner bottlenecks relevant to the requested lecture. Do not write. Output only valid JSON matching expect.
+  lecture_storyboarder:
+    type: agent
+    identity: "Manim Lecture Storyboarder"
+    model: inherit
+    inputs: [lecture_state_importer, visual_learning_policy]
+    skills: [pi-gnosis, manim-video]
+    tools: []
+    expect:
+      narrative_arc: str
+      scenes:
+        type: list
+        items:
+          name: str
+          learning_goal: str
+          visual_metaphor: str
+          key_animation: str
+          narration_beat: str
+      aha_moment: str
+      what_to_avoid:
+        type: list
+        items: str
+    instructions: |
+      Design the lecture as a Manim visual explanation. Use source ids when claims depend on research. Keep scenes compact. Output only valid JSON matching expect.
+  manim_project_builder:
+    type: agent
+    identity: "Manim Project Builder"
+    model: inherit
+    inputs: [lecture_request, manim_policy, lecture_storyboarder]
+    skills: [pi-gnosis, manim-video]
+    tools: [read_file, write_file, edit_file]
+    expect:
+      project_root: str
+      files_written_or_planned:
+        type: list
+        items: str
+      render_command: str
+      cleanup_candidates:
+        type: list
+        items: str
+    instructions: |
+      If apply_writes is false, return file contents as planned artifacts. If writes are enabled by Pi, write only under output_root. Create plan.md, scene_spec.json, script.py, render.sh, and README.md. Do not render here. Output only valid JSON matching expect.
+  render_preflight:
+    type: agent
+    identity: "Manim Render Preflight"
+    model: inherit
+    inputs: [manim_project_builder, manim_policy]
+    skills: [manim-video]
+    tools: [read_file, shell]
+    expect:
+      can_render: bool
+      checks:
+        type: list
+        items:
+          name: str
+          status: str
+          detail: str
+      draft_render_command: str
+      if_not_rendered: str
+    instructions: |
+      Check Python syntax, Manim availability, ffmpeg availability, and LaTeX only if MathTex is used. If the environment is not ready, do not pretend a video was rendered. Output only valid JSON matching expect.
+  visual_quality_gate:
+    type: agent
+    identity: "Manim Visual Quality Gate"
+    model: inherit
+    inputs: [lecture_storyboarder, manim_project_builder, render_preflight, visual_learning_policy]
+    skills: [pi-gnosis, manim-video]
+    tools: [read_file]
+    expect:
+      status: str
+      learning_objective_match: str
+      clutter_risks:
+        type: list
+        items: str
+      source_claim_risks:
+        type: list
+        items: str
+      cleanup_manifest:
+        type: list
+        items: str
+    instructions: |
+      Review the planned or written Manim project. Flag visual clutter, missing aha moment, overuse of text, unsupported research claims, and cleanup candidates. Output only valid JSON matching expect.

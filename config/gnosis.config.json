@@ -1,0 +1,51 @@
+{
+  "schema": "pi-gnosis.config.v1",
+  "runtime": {
+    "provider": "pi",
+    "model": "inherit"
+  },
+  "circuitry": {
+    "version": "0.2",
+    "modelPolicy": "Every graph and every agent node uses model: inherit unless a user explicitly overrides it in Pi."
+  },
+  "paths": {
+    "dagStateRoot": ".pi-gnosis/state",
+    "temporaryRoot": ".pi-gnosis/tmp",
+    "obsidianRoot": "notes",
+    "manimRoot": "manim"
+  },
+  "webTools": {
+    "required": [
+      "web_search",
+      "fetch_content"
+    ],
+    "optional": [
+      "exa_search"
+    ],
+    "source": "pi-web-access is required; pi-exa-search is optional and preferred for first-pass source discovery when installed."
+  },
+  "policies": {
+    "probing": {
+      "multipleChoice": "forbidden",
+      "preferred": [
+        "recall",
+        "explain",
+        "transfer",
+        "contrast",
+        "debug",
+        "teach_back",
+        "source_check"
+      ]
+    },
+    "writes": {
+      "default": "manifest-first",
+      "safeRoots": [
+        ".pi-gnosis/state",
+        ".pi-gnosis/tmp",
+        "notes",
+        "manim"
+      ],
+      "deletePolicy": "cleanup graph may delete only temporary files under .pi-gnosis/tmp unless the user explicitly authorizes deleting generated media."
+    }
+  }
+}

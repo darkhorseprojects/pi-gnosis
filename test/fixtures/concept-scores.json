@@ -1,0 +1,17 @@
+[
+  {
+    "concept": "Circuitry graph as program",
+    "decay_risk": 3,
+    "misconception_risk": 4
+  },
+  {
+    "concept": "DAG state vs Obsidian notes",
+    "decay_risk": 2,
+    "misconception_risk": 3
+  },
+  {
+    "concept": "Open-ended probe evidence",
+    "decay_risk": 4,
+    "misconception_risk": 2
+  }
+]
