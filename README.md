@@ -38,7 +38,7 @@ The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generat
 ## Dependencies
 
 Required:
-- `@darkhorseprojects/pi-circuitry` v0.2.6
+- `@darkhorseprojects/pi-circuitry` ^0.2.21
 - `pi-web-access` ^0.10.7
 
 Optional:
