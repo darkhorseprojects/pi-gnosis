@@ -6,14 +6,6 @@
 
 Source-grounded research and non-linear tutoring for [Pi](https://github.com/earendil-works/pi-coding-agent). pi-gnosis turns learning requests into executable Circuitry graph programs instead of lengthy prose responses.
 
-```text
-normal Pi conversation
-  -> Pi decides pi-gnosis is useful
-  -> Pi runs one or more graphs through pi-circuitry
-  -> graph agents use pi-web-access for research
-  -> results become DAG state, Obsidian notes, or Manim lecture projects
-```
-
 ## Features
 
 - **Non-linear tutoring**: Adaptive learning that responds to demonstrated understanding
@@ -54,4 +46,4 @@ Optional:
 
 ## License
 
-MIT - see [LICENSE](LICENSE) file for details.
+Apache 2.0 - see [LICENSE](LICENSE) file for details.
