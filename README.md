@@ -1,112 +1,56 @@
-# Pi-GNOSIS
+# pi-gnosis
 
-Pi-GNOSIS is a Circuitry-first Pi package for source-grounded research and non-linear tutoring. It depends on `@darkhorseprojects/pi-circuitry` v0.2.6, so the core workflows are not long prose checklists. They are executable Circuitry graph programs.
+[![CI](https://github.com/darkhorseprojects/pi-gnosis/actions/workflows/ci.yml/badge.svg)](https://github.com/darkhorseprojects/pi-gnosis/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-The package is designed for this shape:
+Source-grounded research and non-linear tutoring for [Pi](https://github.com/earendil-works/pi-coding-agent). pi-gnosis turns learning requests into executable Circuitry graph programs instead of lengthy prose responses.
 
 ```text
 normal Pi conversation
-  -> Pi decides Pi-GNOSIS is useful
-  -> Pi reads skills/pi-gnosis/SKILL.md
+  -> Pi decides pi-gnosis is useful
   -> Pi runs one or more graphs through pi-circuitry
-  -> graph agents use pi-web-access / optional pi-exa-search for research
+  -> graph agents use pi-web-access for research
   -> results become DAG state, Obsidian notes, or Manim lecture projects
 ```
 
-## What Circuitry means here
+## Features
 
-Circuitry is the agentic programming layer. Each graph is already the multi-agent conversation/work simulation: roles, context boundaries, inputs, tool permissions, expected schemas, and output contracts. There is no special "simulator node". The program is the graph.
+- **Non-linear tutoring**: Adaptive learning that responds to demonstrated understanding
+- **Source-grounded research**: Every claim traces back to fetched sources
+- **Open-ended probes**: Recall, explain, transfer, contrast, debug - no multiple-choice
+- **Obsidian integration**: Export notes to a compatible learning vault
+- **Manim lectures**: Generate video lectures with local Manim CE
+- **Knowledge tracing**: DAG state tracks understanding depth over time
 
-The packaged graph programs are:
+## Graph Programs
 
 | Graph | Purpose |
 | --- | --- |
-| `graphs/research.circuitry.yaml` | Delegated research pipeline: scope, query planning, source discovery, fetching, claim extraction, critique, KT DAG seed. |
-| `graphs/tutoring-session.circuitry.yaml` | Non-linear tutoring turn planner with open-ended probes and state updates. |
-| `graphs/note-export.circuitry.yaml` | Optional Obsidian-compatible note export from canonical DAG state. |
-| `graphs/manim-lecture.circuitry.yaml` | Video/lecture project generation using the bundled `manim-video` skill. |
-| `graphs/cleanup.circuitry.yaml` | Safe cleanup pass for temporary artifacts created by graph runs. |
-| `graphs/minimal-smoke.circuitry.yaml` | Tiny graph used to smoke-test Circuitry shape. |
+| `graphs/research.circuitry.yaml` | Delegated research pipeline: scope, query planning, source discovery, fetching, claim extraction, critique, KT DAG seed |
+| `graphs/tutoring-session.circuitry.yaml` | Non-linear tutoring turn planner with open-ended probes and state updates |
+| `graphs/note-export.circuitry.yaml` | Obsidian-compatible note export from canonical DAG state |
+| `graphs/manim-lecture.circuitry.yaml` | Video/lecture project generation using bundled manim-video skill |
+| `graphs/cleanup.circuitry.yaml` | Safe cleanup pass for temporary artifacts created by graph runs |
+| `graphs/minimal-smoke.circuitry.yaml` | Tiny graph for Circuitry shape validation |
 
-All graphs use:
+## Installation
 
-```yaml
-runtime:
-  provider: pi
-  model: inherit
+```bash
+npm install
+npm test
 ```
 
-and each agent node also declares `model: inherit`, so the graph inherits the active Pi conversation model unless the user explicitly overrides the package config.
+The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generated Circuitry YAML against the bundled v0.2 structural checker. Runtime execution requires a Pi environment with network access.
 
 ## Dependencies
 
 Required:
+- `@darkhorseprojects/pi-circuitry` v0.2.6
+- `pi-web-access` ^0.10.7
 
-```json
-{
-  "@darkhorseprojects/pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.6",
-  "pi-web-access": "^0.10.7"
-}
-```
+Optional:
+- `pi-exa-search` for Exa-first source discovery
 
-Optional but useful:
+## License
 
-```json
-{
-  "pi-exa-search": "github:najibninaba/pi-exa-search#main"
-}
-```
-
-`pi-web-access` provides `web_search` and `fetch_content`. `pi-exa-search` provides `exa_search` for Exa-first source discovery.
-
-## DAG state vs Obsidian
-
-DAG state is canonical runtime state. Obsidian is learner-facing memory.
-
-DAG state stores typed program artifacts:
-
-```text
-.pi-gnosis/state/<run-id>/
-  run_manifest.json
-  source_ledger.json
-  claim_ledger.json
-  kt_dag.json
-  learner_state.json
-  probe_results.json
-  review_schedule.json
-  output_manifest.json
-```
-
-Obsidian stores notes the person can actually learn from:
-
-```text
-notes/<topic>/
-  00-map.md
-  source-ledger.md
-  concepts/*.md
-  probes.md
-  review-plan.md
-  reflection-log.md
-```
-
-Pi may read Obsidian notes to infer evidence of prior understanding, but Obsidian notes are not the source of truth for provenance or scheduling. The KT DAG is.
-
-## Manim output
-
-The bundled `skills/manim-video/SKILL.md` is an original local Manim CE skill inspired by the public Nous/Hermes Manim Video documentation. The graph `graphs/manim-lecture.circuitry.yaml` references `skills: [pi-gnosis, manim-video]`, so the Manim-generation agent can load that skill directly.
-
-Rendering requires local Manim CE, LaTeX, and ffmpeg. The package can generate and validate a project structure even when rendering is unavailable.
-
-## Tests
-
-Run from the package root:
-
-```bash
-npm test
-```
-
-The tests validate package-authored helpers, graph shape, Circuitry v0.2 constraints, model inheritance, no legacy edges, no bogus simulation node, safe cleanup planning, and Manim project syntax.
-
-## Honesty about upstream runtime tests
-
-This repository was built in an offline shell, so `npm install` from GitHub could not run here. The package pins `@darkhorseprojects/pi-circuitry` exactly as requested and validates every generated Circuitry YAML against the bundled v0.2 structural checker. Official runtime execution should be performed in a Pi environment with network access and the installed dependencies.
+MIT - see [LICENSE](LICENSE) file for details.
