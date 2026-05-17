@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import {
   assertAllowedProbe,
+  buildInteractiveArtifact,
   buildManimProject,
   buildReviewSchedule,
   getGraphProgram,
@@ -31,6 +32,7 @@ for (const file of [
   'graphs/tutoring-session.circuitry.yaml',
   'graphs/note-export.circuitry.yaml',
   'graphs/manim-lecture.circuitry.yaml',
+  'graphs/interactive-artifact.circuitry.yaml',
   'graphs/cleanup.circuitry.yaml',
   'graphs/minimal-smoke.circuitry.yaml',
 ]) {
@@ -70,6 +72,20 @@ for (const file of ['plan.md', 'scene_spec.json', 'script.py', 'render.sh', 'REA
   assert.equal(existsSync(resolve(project.projectRoot, file)), true);
 }
 execFileSync('python3', ['-m', 'py_compile', resolve(project.projectRoot, 'script.py')], { stdio: 'pipe' });
+
+const artifactTmp = mkdtempSync(resolve(tmpdir(), 'pi-gnosis-artifact-'));
+const artifact = buildInteractiveArtifact({ topic: 'Softmax Temperature', kind: 'lab', outputRoot: artifactTmp, write: true });
+for (const file of ['artifact_manifest.json', 'learning_spec.json', 'page_spec.json', 'app.zon', 'frontend/package.json', 'frontend/index.html', 'run.sh', 'README.md']) {
+  assert.equal(existsSync(resolve(artifact.artifactRoot, file)), true);
+}
+const manifest = JSON.parse(readFileSync(resolve(artifact.artifactRoot, 'artifact_manifest.json'), 'utf8'));
+assert.equal(manifest.engine, 'zero-native');
+assert.equal(manifest.temporary, true);
+assert.match(readFileSync(resolve(artifact.artifactRoot, 'frontend/index.html'), 'utf8'), /Reveal feedback/);
+
+const pageArtifact = buildInteractiveArtifact({ topic: 'Claim Ledgers', kind: 'page' });
+assert.equal(pageArtifact.manifest.engine, 'zero-native');
+assert.equal(pageArtifact.learningSpec.designSystem, 'pi-gnosis-page');
 
 const graphsOutput = execFileSync('node', ['bin/pi-gnosis.js', 'graphs'], { encoding: 'utf8' });
 assert.match(graphsOutput, /research/);

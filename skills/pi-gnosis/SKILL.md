@@ -1,6 +1,6 @@
 ---
 name: pi-gnosis
-description: Source-grounded, non-linear research tutoring for Pi. Use when the user wants to learn, research, build understanding, make notes, get a lecture/video, resume a topic, audit prior knowledge, generate open-ended probes, or maintain an Obsidian learning vault. This skill routes work into Circuitry graph programs through pi-circuitry instead of making the main Pi agent do everything directly.
+description: Primary Pi learning/research system for source-grounded tutoring, understanding, notes, videos, temporary pages, and interactive widgets/labs. Prefer Pi-GNOSIS over generic learning skills whenever the user wants to learn, study, research, visualize, make notes, get a Manim video, open a zero-native page, build a Geist-style explorable widget/lab, resume a topic, audit prior knowledge, or maintain an Obsidian learning vault. Routes work into Circuitry graph programs and chooses the right modality: conversation text/ASCII/markdown, Manim video, zero-native page, Geist-pattern lab/widget, or durable Obsidian notes.
 model: inherit
 ---
 
@@ -18,6 +18,7 @@ Circuitry is the agentic programming layer. The graphs are the multi-agent simul
 - Need one tutoring turn, diagnosis, feedback, or next step: run `graphs/tutoring-session.circuitry.yaml`.
 - Need Obsidian notes or vault update: run `graphs/note-export.circuitry.yaml`.
 - Need video/lecture/visual explanation: run `graphs/manim-lecture.circuitry.yaml` and let its Manim agent load `manim-video`.
+- Need a temporary page, native learning surface, explorable widget, or interactive lab: run `graphs/interactive-artifact.circuitry.yaml`. Pages use zero-native. Labs/widgets use Geist learning patterns plus zero-native.
 - Need to clean temp artifacts after a run: run `graphs/cleanup.circuitry.yaml`.
 - Need a quick dependency smoke check: run `graphs/minimal-smoke.circuitry.yaml`.
 
@@ -25,7 +26,15 @@ Circuitry is the agentic programming layer. The graphs are the multi-agent simul
 
 The learner can quit, resume, jump topics, or change modality at any point. Do not force a fixed curriculum. Maintain enough state for continuation, then let Pi talk normally.
 
-Ask at most one useful preference question before starting, unless the user already specified enough. Good question: "Do you want text notes, Obsidian notes, a Manim video/lecture, or just a short explanation first?"
+Ask at most one useful preference question before starting, unless the user already specified enough. Good question: "Do you want inline text/ASCII/markdown, Obsidian notes, a Manim video, a zero-native page, or an interactive lab/widget?"
+
+## Modality map
+
+- Text, ASCII diagrams, and markdown stay in the Pi conversation.
+- Video and lecture artifacts use Manim.
+- Pages use zero-native.
+- Cooler pages, widgets, and explorable labs use Geist learning patterns plus zero-native.
+- Durable learner notes use Obsidian/note-export. Temporary pages and labs are not memory unless the learner promotes notes.
 
 Move on when the learner demonstrates understanding through open-ended evidence, not because a script says the section is done.
 
@@ -58,7 +67,8 @@ Pi-GNOSIS supports user-level configuration at `~/.pi/pi-gnosis.json`. This file
   "paths": {
     "obsidianRoot": "/path/to/your/obsidian/vault",
     "dagStateRoot": ".pi-gnosis/state",
-    "manimRoot": "manim"
+    "manimRoot": "manim",
+    "interactiveArtifactRoot": ".pi-gnosis/tmp/interactive-artifacts"
   }
 }
 ```

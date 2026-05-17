@@ -1,13 +1,14 @@
 {
   "name": "pi-gnosis",
   "package": "pi-gnosis",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "kind": "pi-package",
   "description": "Circuitry-first Pi package that turns research and tutoring plans into executable Circuitry graph programs.",
   "dependsOn": {
     "pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.21",
     "circuitry": "transitive through pi-circuitry",
     "pi-web-access": "npm:pi-web-access@^0.10.7",
+    "zero-native": "npm:zero-native@^0.2.0",
     "pi-exa-search": "optional github:najibninaba/pi-exa-search#main"
   },
   "runtimeDefaults": {
@@ -23,6 +24,7 @@
       "tutoringSession": "graphs/tutoring-session.circuitry.yaml",
       "noteExport": "graphs/note-export.circuitry.yaml",
       "manimLecture": "graphs/manim-lecture.circuitry.yaml",
+      "interactiveArtifact": "graphs/interactive-artifact.circuitry.yaml",
       "cleanup": "graphs/cleanup.circuitry.yaml",
       "smoke": "graphs/minimal-smoke.circuitry.yaml"
     },
@@ -37,6 +39,9 @@
     "knowledge-tracing-dag-state",
     "obsidian-compatible-note-export",
     "manim-lecture-generation",
+    "zero-native-temporary-pages",
+    "geist-style-interactive-learning-labs",
+    "conversation-native-text-ascii-markdown",
     "safe-cleanup-planning"
   ]
 }

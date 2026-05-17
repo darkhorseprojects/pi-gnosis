@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { buildManimProject, buildReviewSchedule, getGraphProgram, listGraphPrograms, loadConfig, planCleanup, storagePlan, validateCircuitryFile } from '../src/index.js';
+import { buildInteractiveArtifact, buildManimProject, buildReviewSchedule, getGraphProgram, listGraphPrograms, loadConfig, planCleanup, storagePlan, validateCircuitryFile } from '../src/index.js';
 
 function arg(name, fallback = undefined) {
   const prefix = `--${name}=`;
@@ -13,7 +13,7 @@ function arg(name, fallback = undefined) {
 }
 
 function usage() {
-  console.log(`pi-gnosis commands:\n  graphs\n  graph <name>\n  validate <file...>\n  storage-plan --topic <topic>\n  schedule <concept-scores.json> [--today YYYY-MM-DD]\n  manim-sample --topic <topic> --out <dir>\n  cleanup-plan <path...> [--apply] [--allow-media]`);
+  console.log(`pi-gnosis commands:\n  graphs\n  graph <name>\n  validate <file...>\n  storage-plan --topic <topic>\n  schedule <concept-scores.json> [--today YYYY-MM-DD]\n  manim-sample --topic <topic> --out <dir>\n  artifact-sample --topic <topic> [--kind page|lab] --out <dir>\n  cleanup-plan <path...> [--apply] [--allow-media]`);
 }
 
 const cmd = process.argv[2];
@@ -44,6 +44,12 @@ try {
     const out = arg('out', '/tmp/pi-gnosis-manim-sample');
     const project = buildManimProject({ topic, outputRoot: out, write: true });
     console.log(JSON.stringify({ ok: true, projectRoot: project.projectRoot, files: Object.keys(project.files) }, null, 2));
+  } else if (cmd === 'artifact-sample') {
+    const topic = arg('topic', 'knowledge tracing DAGs');
+    const kind = arg('kind', 'lab');
+    const out = arg('out', '.pi-gnosis/tmp/interactive-artifacts');
+    const artifact = buildInteractiveArtifact({ topic, kind, outputRoot: out, write: true });
+    console.log(JSON.stringify({ ok: true, artifactRoot: artifact.artifactRoot, kind, engine: artifact.manifest.engine, files: Object.keys(artifact.files) }, null, 2));
   } else if (cmd === 'cleanup-plan') {
     const paths = process.argv.slice(3).filter((x) => !x.startsWith('--'));
     console.log(JSON.stringify(planCleanup(paths, { applyCleanup: process.argv.includes('--apply'), allowGeneratedMediaCleanup: process.argv.includes('--allow-media') }), null, 2));

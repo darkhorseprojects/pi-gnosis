@@ -12,7 +12,8 @@
     "dagStateRoot": ".pi-gnosis/state",
     "temporaryRoot": ".pi-gnosis/tmp",
     "obsidianRoot": "notes",
-    "manimRoot": "manim"
+    "manimRoot": "manim",
+    "interactiveArtifactRoot": ".pi-gnosis/tmp/interactive-artifacts"
   },
   "webTools": {
     "required": [
@@ -42,10 +43,18 @@
       "safeRoots": [
         ".pi-gnosis/state",
         ".pi-gnosis/tmp",
+        ".pi-gnosis/tmp/interactive-artifacts",
         "notes",
         "manim"
       ],
       "deletePolicy": "cleanup graph may delete only temporary files under .pi-gnosis/tmp unless the user explicitly authorizes deleting generated media."
+    },
+    "modalities": {
+      "conversation": "Text, ASCII diagrams, and markdown stay in the Pi conversation.",
+      "video": "Manim is the video and lecture engine.",
+      "page": "zero-native is the native temporary page engine.",
+      "lab": "Geist learning patterns plus zero-native create cooler pages, widgets, and explorable labs.",
+      "durableNotes": "Obsidian/note-export stores learner-readable notes; temporary pages and labs do not become memory by default."
     }
   }
 }

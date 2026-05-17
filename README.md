@@ -13,6 +13,9 @@ Source-grounded research and non-linear tutoring for [Pi](https://github.com/ear
 - **Open-ended probes**: Recall, explain, transfer, contrast, debug - no multiple-choice
 - **Obsidian integration**: Export notes to a compatible learning vault
 - **Manim lectures**: Generate video lectures with local Manim CE
+- **zero-native pages**: Generate temporary native learning pages that open as disposable study surfaces
+- **Geist-style labs/widgets**: Generate explorable attempt→feedback learning labs using Geist learning patterns on zero-native surfaces
+- **Conversation-native text**: Keep text, ASCII diagrams, and markdown in the Pi conversation when no artifact is needed
 - **Knowledge tracing**: DAG state tracks understanding depth over time
 
 ## Graph Programs
@@ -23,6 +26,7 @@ Source-grounded research and non-linear tutoring for [Pi](https://github.com/ear
 | `graphs/tutoring-session.circuitry.yaml` | Non-linear tutoring turn planner with open-ended probes and state updates |
 | `graphs/note-export.circuitry.yaml` | Obsidian-compatible note export from canonical DAG state |
 | `graphs/manim-lecture.circuitry.yaml` | Video/lecture project generation using bundled manim-video skill |
+| `graphs/interactive-artifact.circuitry.yaml` | Temporary zero-native pages and Geist-style explorable labs/widgets |
 | `graphs/cleanup.circuitry.yaml` | Safe cleanup pass for temporary artifacts created by graph runs |
 | `graphs/minimal-smoke.circuitry.yaml` | Tiny graph for Circuitry shape validation |
 
@@ -35,11 +39,24 @@ npm test
 
 The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generated Circuitry YAML against the bundled v0.2 structural checker. Runtime execution requires a Pi environment with network access.
 
+## Learning modalities
+
+| Modality | Engine | Persistence |
+| --- | --- | --- |
+| Text / ASCII / markdown | Pi conversation | Conversation only unless exported |
+| Video / lecture | Manim | Generated project/media under configured Manim root |
+| Temporary page | zero-native | Disposable artifact under `.pi-gnosis/tmp/interactive-artifacts` |
+| Cooler page / widget / explorable lab | Geist learning patterns + zero-native | Disposable artifact; learner notes are exported separately |
+| Durable notes | Obsidian-compatible note export | Learner-readable permanent notes |
+
+Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt.
+
 ## Dependencies
 
 Required:
 - `@darkhorseprojects/pi-circuitry` ^0.2.21
 - `pi-web-access` ^0.10.7
+- `zero-native` ^0.2.0 for temporary native pages and interactive labs
 
 Optional:
 - `pi-exa-search` for Exa-first source discovery

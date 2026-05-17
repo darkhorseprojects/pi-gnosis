@@ -69,6 +69,10 @@ export function graphPath(name) {
     'note-export': 'graphs/note-export.circuitry.yaml',
     manim: 'graphs/manim-lecture.circuitry.yaml',
     'manim-lecture': 'graphs/manim-lecture.circuitry.yaml',
+    artifact: 'graphs/interactive-artifact.circuitry.yaml',
+    'interactive-artifact': 'graphs/interactive-artifact.circuitry.yaml',
+    page: 'graphs/interactive-artifact.circuitry.yaml',
+    lab: 'graphs/interactive-artifact.circuitry.yaml',
     cleanup: 'graphs/cleanup.circuitry.yaml',
     smoke: 'graphs/minimal-smoke.circuitry.yaml',
   };

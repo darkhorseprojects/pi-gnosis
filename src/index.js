@@ -6,3 +6,4 @@ export { storagePlan } from './storage-contract.js';
 export { assertAllowedProbe, isForbiddenProbe, recommendedProbeTypes } from './probe-policy.js';
 export { classifyArtifact, planCleanup } from './cleanup-policy.js';
 export { buildManimProject } from './manim-project.js';
+export { buildInteractiveArtifact } from './interactive-artifact.js';

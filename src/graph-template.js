@@ -6,5 +6,5 @@ export function getGraphProgram(name) {
 }
 
 export function listGraphPrograms() {
-  return ['research', 'tutoring-session', 'note-export', 'manim-lecture', 'cleanup', 'smoke'];
+  return ['research', 'tutoring-session', 'note-export', 'manim-lecture', 'interactive-artifact', 'cleanup', 'smoke'];
 }

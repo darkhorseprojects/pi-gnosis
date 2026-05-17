@@ -1,0 +1,130 @@
+circuitry: "0.2"
+title: "Pi-GNOSIS Interactive Artifact Program"
+description: |
+  Frozen Circuitry program for creating temporary learning pages and Geist-style interactive labs. Text, ASCII, and markdown remain in the Pi conversation; video goes to Manim; pages use zero-native; richer widgets/labs use Geist learning patterns on a zero-native surface.
+runtime:
+  provider: pi
+  model: inherit
+validation:
+  rules:
+    - no-self-loops
+    - no-unknown-edge-endpoints
+    - no-cycles
+    - rule: require-executable-inputs
+      executableKinds: [agent, tool]
+resources:
+  artifact_request:
+    type: text
+    label: "Interactive artifact request"
+    value: |
+      topic: ""
+      kind: "lab"
+      output_root: ".pi-gnosis/tmp/interactive-artifacts"
+      open_immediately: true
+      apply_writes: false
+  modality_policy:
+    type: text
+    label: "Pi-GNOSIS modality policy"
+    value: |
+      Text, ASCII diagrams, and markdown stay in the Pi conversation. Video and lecture artifacts use the Manim graph. Temporary pages use zero-native. Cooler pages, widgets, and explorable labs use Geist learning patterns plus zero-native. Durable learner notes are exported through the note-export graph, not stored inside temporary artifacts.
+  artifact_policy:
+    type: text
+    label: "Temporary artifact policy"
+    value: |
+      Write only under output_root. Produce an artifact_manifest.json before any other write. Artifacts are temporary unless the learner explicitly promotes notes or outputs. No passive-only pages: every page/lab must include orient, attempt, feedback, explanation, checkpoint, and reflection. Do not grant native permissions or broad navigation origins.
+  artifact_intent_router:
+    type: agent
+    identity: "Pi-GNOSIS Artifact Intent Router"
+    model: inherit
+    inputs: [artifact_request, modality_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      selected_modality: str
+      reason: str
+      route_to_graph: str
+      artifact_kind: str
+      should_stay_in_conversation: bool
+    instructions: |
+      Choose the correct Pi-GNOSIS modality. If text, ASCII, or markdown is sufficient, keep it in the conversation. If video or temporal animation is needed, route to manim-lecture. If an interactive or native surface helps, select page or lab here. Output only valid JSON matching expect.
+  learning_loop_designer:
+    type: agent
+    identity: "Learning Loop Designer"
+    model: inherit
+    inputs: [artifact_request, artifact_intent_router, artifact_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      learning_objective: str
+      orient: str
+      attempt_prompt: str
+      feedback_rule: str
+      explanation_anchor: str
+      checkpoint_prompt: str
+      reflection_prompt: str
+      misconception_to_surface: str
+    instructions: |
+      Design the smallest useful active learning loop. The learner must attempt before explanation. Feedback must be specific. Avoid multiple-choice diagnostic probes. Output only valid JSON matching expect.
+  surface_planner:
+    type: agent
+    identity: "Zero-Native Surface Planner"
+    model: inherit
+    inputs: [artifact_request, learning_loop_designer, modality_policy]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      engine: str
+      design_system: str
+      components:
+        type: list
+        items: str
+      url_state:
+        type: list
+        items: str
+      native_policy:
+        type: dict
+      files_to_create:
+        type: list
+        items: str
+    instructions: |
+      Plan a zero-native page. For kind=lab, use Geist learning patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. Keep native policy strict: system WebView, no bridge unless explicitly required, no external navigation. Output only valid JSON matching expect.
+  artifact_writer:
+    type: agent
+    identity: "Interactive Artifact Writer"
+    model: inherit
+    inputs: [artifact_request, artifact_policy, learning_loop_designer, surface_planner]
+    skills: [pi-gnosis]
+    tools: [read_file, write_file, edit_file, shell]
+    expect:
+      artifact_root: str
+      manifest_path: str
+      files_written_or_planned:
+        type: list
+        items: str
+      run_command: str
+      open_command: str
+      cleanup_candidates:
+        type: list
+        items: str
+    instructions: |
+      If apply_writes is false, return planned file contents and commands. If writes are enabled by Pi, write only under output_root and write artifact_manifest.json first. Create a runnable temporary artifact with learning_spec.json, page_spec.json, app.zon, frontend files, README.md, and run.sh. Output only valid JSON matching expect.
+  artifact_quality_gate:
+    type: agent
+    identity: "Interactive Artifact Quality Gate"
+    model: inherit
+    inputs: [artifact_request, artifact_policy, learning_loop_designer, surface_planner, artifact_writer]
+    skills: [pi-gnosis]
+    tools: [read_file]
+    expect:
+      status: str
+      active_learning_loop_present: bool
+      native_policy_ok: bool
+      temporary_storage_ok: bool
+      passive_page_risks:
+        type: list
+        items: str
+      cleanup_manifest:
+        type: list
+        items: str
+    instructions: |
+      Reject artifacts that are passive reading, write outside output_root, omit manifest-first behavior, or use loose native permissions. Confirm that page/lab artifacts follow the modality map. Output only valid JSON matching expect.
