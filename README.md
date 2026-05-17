@@ -51,6 +51,11 @@ The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generat
 
 Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt.
 
+## Credits
+
+- Native temporary pages use [Vercel Labs zero-native](https://github.com/vercel-labs/zero-native).
+- Geist-style labs/widgets are inspired by [Vercel Labs skill-geist-learning-labs](https://github.com/vercel-labs/skill-geist-learning-labs). Pi-GNOSIS incorporates the learning patterns directly instead of installing a second competing learning skill by default.
+
 ## Dependencies
 
 Required:
