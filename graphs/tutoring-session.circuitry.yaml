@@ -1,7 +1,7 @@
 circuitry: "0.2"
-title: "pi-gnosis tutoring graph program"
+title: "pi-gnosis tutoring control loop"
 description: |
-  Graph program for one adaptive tutoring turn. Runtime input carries learner request/context; config input carries durable memory settings.
+  Graph program for one non-linear tutoring turn. Runtime input carries learner request, stage, preferences, probe history, and recent context. Config input carries durable memory settings. The graph may ask intake, probe, teach, route to media, or recommend note export based on evidence.
 runtime:
   provider: pi
   model: inherit
@@ -23,25 +23,32 @@ resources:
     value: "{}"
   tutoring_contract:
     type: text
-    label: "Tutoring contract"
+    label: "Tutoring control contract"
     value: |
-      Teach one useful next step. The learner may jump topics or change modality. Use open probes only: recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, or source-check. Never use multiple-choice diagnostics.
+      Teach through a non-linear control loop, not a fixed curriculum. Each turn must choose one useful next action from learner request, current understanding, goals, modality preference, and probe evidence. Broad new topics require intake before lesson dumping unless the learner already provided scope, background, modality, and memory preference. Use open probes only: recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, or source-check. Never use multiple-choice diagnostics.
   intake_station:
     type: agent
-    identity: "Tutoring Intake Station"
+    identity: "Learning Intake Station"
     model: inherit
     inputs: [session_request, tutoring_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
+      stage: str
       topic: str
-      learner_intent: str
-      desired_modality: str
-      immediate_need: str
-      memory_needed: bool
+      learner_request_type: str
+      known_scope: str
+      known_background: str
+      known_modality: str
+      known_memory_preference: str
+      missing_intake:
+        type: list
+        items: str
+      should_ask_intake: bool
+      intake_question: str
       success_condition: str
     instructions: |
-      Parse the runtime input into a precise tutoring job. Decide what a successful next turn must accomplish. Output only valid JSON matching expect.
+      Parse the runtime input. Decide whether this is a broad new topic, a continuation, a probe response, or an artifact/note/research request. If scope, current understanding, preferred learning surface, or Obsidian memory preference are missing for a broad topic, set should_ask_intake true and produce one compact intake question covering all missing items. Do not teach yet when intake is required. Output only valid JSON matching expect.
   memory_station:
     type: agent
     identity: "Learner Memory Station"
@@ -56,52 +63,97 @@ resources:
       known_misconceptions:
         type: list
         items: str
-      useful_prior_examples:
+      learner_preferences:
+        type: list
+        items: str
+      progress_markers:
         type: list
         items: str
       missing_memory:
         type: list
         items: str
     instructions: |
-      Use gnosis_config to locate learner memory when memory is useful. If memory is not needed or unavailable, say so without blocking the turn. Do not write. Output only valid JSON matching expect.
-  move_station:
+      Use gnosis_config to inspect learner memory when it is useful and available. Look for prior goals, preferences, misconceptions, notes, and progress on this topic. Do not block if memory is unavailable. Do not write. Output only valid JSON matching expect.
+  diagnosis_station:
+    type: agent
+    identity: "Understanding Diagnosis Station"
+    model: inherit
+    inputs: [session_request, intake_station, memory_station, tutoring_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      current_understanding: str
+      evidence:
+        type: list
+        items: str
+      likely_bottleneck: str
+      next_probe_type: str
+      next_probe: str
+      confidence: str
+    instructions: |
+      Infer the learner's current understanding from explicit background, recent answers, and memory. If evidence is weak, design a short open probe. Do not use recognition-only or multiple-choice probes. Output only valid JSON matching expect.
+  route_station:
+    type: agent
+    identity: "Learning Route Station"
+    model: inherit
+    inputs: [session_request, intake_station, memory_station, diagnosis_station, tutoring_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      next_action: str
+      reason: str
+      teaching_surface: str
+      downstream_graph: str
+      downstream_input: dict
+      note_export_recommended: bool
+      note_export_reason: str
+    instructions: |
+      Choose the next non-linear branch. Valid next_action values: ask_intake, ask_probe, teach_chat, route_research, route_notes, route_manim, route_interactive, review_previous, stop_and_wait. Choose ask_intake when intake_station requires it. Choose ask_probe when understanding evidence is insufficient. Choose a media/artifact route when requested or clearly beneficial. Recommend note export when the learner opted into memory or a misconception/preference/progress marker should be preserved. Output only valid JSON matching expect.
+  teaching_station:
     type: agent
     identity: "Teaching Move Station"
     model: inherit
-    inputs: [intake_station, memory_station, tutoring_contract]
-    skills: [pi-gnosis]
-    tools: []
-    expect:
-      response: str
-      visual_or_ascii: str
-      learner_probe: str
-      why_this_move: str
-      optional_next_modality: str
-    instructions: |
-      Produce the actual learner-facing tutoring turn. Keep it focused, clear, and active. Include a small probe unless the learner requested a pure artifact handoff. Output only valid JSON matching expect.
-  memory_update_station:
-    type: agent
-    identity: "Memory Update Station"
-    model: inherit
-    inputs: [session_request, intake_station, move_station]
-    skills: [pi-gnosis]
-    tools: []
-    expect:
-      should_write: bool
-      proposed_note_update: str
-      reason: str
-    instructions: |
-      Decide whether this turn produced durable learner-memory information. Prepare a proposed note update only when the runtime input requests memory writing. Do not write. Output only valid JSON matching expect.
-  output_station:
-    type: agent
-    identity: "Tutoring Output Station"
-    model: inherit
-    inputs: [move_station, memory_update_station]
+    inputs: [session_request, intake_station, memory_station, diagnosis_station, route_station, tutoring_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
       learner_response: str
-      memory_update_status: str
-      next_graph_hint: str
+      visual_or_ascii: str
+      probe: str
+      why_this_move: str
+      next_options:
+        type: list
+        items: str
     instructions: |
-      Return the response Pi should say to the learner and any routing hint for video, notes, research, or interactive artifacts. Output only valid JSON matching expect.
+      Produce the learner-facing message for the chosen next_action. If ask_intake, ask only the compact intake question. If ask_probe, ask only the probe with one sentence of context. If teach_chat, teach one focused move, include any helpful ASCII/markdown, and end with an open probe. If routing to another graph, explain what should run next and why. Do not dump a broad lesson before intake. Output only valid JSON matching expect.
+  memory_update_station:
+    type: agent
+    identity: "Memory Update Planning Station"
+    model: inherit
+    inputs: [session_request, intake_station, memory_station, diagnosis_station, route_station, teaching_station]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      should_offer_note_export: bool
+      should_write_now: bool
+      proposed_note_update: str
+      reason: str
+      note_export_input: dict
+    instructions: |
+      Decide whether this turn should create or update durable Obsidian learner memory. Only set should_write_now true when runtime input explicitly authorized writing notes. Otherwise prepare a concise proposed note export input and reason. Do not write. Output only valid JSON matching expect.
+  output_station:
+    type: agent
+    identity: "Tutoring Output Station"
+    model: inherit
+    inputs: [route_station, teaching_station, memory_update_station]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      learner_response: str
+      next_graph_hint: str
+      next_graph_input: dict
+      note_status: str
+      artifact_status: str
+      control_state: str
+    instructions: |
+      Return exactly what Pi should say next plus machine-readable routing hints. Preserve the non-linear control state: whether waiting for intake, waiting for probe answer, teaching, routing to another graph, or offering notes. Output only valid JSON matching expect.
