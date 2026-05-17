@@ -58,7 +58,7 @@ assert.match(plan.manim.root, /obsidian-notes/);
 assert.match(plan.interactive.root, /obsidian-notes/);
 
 const cleanup = planCleanup([
-  '.pi-gnosis/tmp/run-a/scratch.md',
+  '/tmp/pi-gnosis/run-a/scratch.md',
   'notes/topic/00-map.md',
   'notes/profile.md',
   'manim/topic/media/videos/script/480p15/OpeningMap.mp4',

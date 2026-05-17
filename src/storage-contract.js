@@ -20,7 +20,7 @@ function slugify(value) {
   return String(value || 'topic').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'topic';
 }
 
-export function storagePlan({ topic = 'topic', obsidianRoot = 'notes', manimRoot = 'manim', tempRoot = '.pi-gnosis/tmp' } = {}) {
+export function storagePlan({ topic = 'topic', obsidianRoot = 'notes', manimRoot = '/tmp/pi-gnosis/manim', tempRoot = '/tmp/pi-gnosis' } = {}) {
   const slug = slugify(topic);
   return {
     obsidian: {

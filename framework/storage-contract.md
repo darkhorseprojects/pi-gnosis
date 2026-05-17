@@ -19,7 +19,7 @@ Store here:
 
 ## Temporary artifacts
 
-Temporary artifacts are disposable and live under `.pi-gnosis/tmp/` or `manim/`.
+Temporary artifacts are disposable and live under `/tmp/pi-gnosis/` or `/tmp/pi-gnosis/manim/`.
 
 Store here:
 

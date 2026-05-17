@@ -54,7 +54,7 @@ Obsidian is the persistent learner memory.
 - Store concept notes, session notes, source notes, misconceptions, review prompts, reflection logs, and the optional profile note under the configured notes root.
 - The paths in config are the source of truth; examples like `notes/` and `notes/profile.md` are defaults only.
 - Treat notes as the source of truth for what the learner should keep.
-- Temporary pages, labs, and videos are disposable teaching surfaces only.
+- Temporary pages, labs, and videos are disposable teaching surfaces only, with defaults under `/tmp/pi-gnosis`.
 
 ## Writes and cleanup
 
@@ -69,9 +69,9 @@ Pi-GNOSIS supports user-level configuration at `~/.pi/pi-gnosis.json`. This file
   "paths": {
     "obsidianRoot": "./notes",
     "profileNote": "./notes/profile.md",
-    "temporaryRoot": ".pi-gnosis/tmp",
-    "manimRoot": "manim",
-    "interactiveArtifactRoot": ".pi-gnosis/tmp/interactive-artifacts"
+    "temporaryRoot": "/tmp/pi-gnosis",
+    "manimRoot": "/tmp/pi-gnosis/manim",
+    "interactiveArtifactRoot": "/tmp/pi-gnosis/interactive-artifacts"
   }
 }
 ```

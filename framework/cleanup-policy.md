@@ -4,7 +4,7 @@ Cleanup is a graph program, not an ad hoc shell habit.
 
 The cleanup graph may identify:
 
-- temporary graph-run files under `.pi-gnosis/tmp/`;
+- temporary graph-run files under `/tmp/pi-gnosis/`;
 - failed draft Manim renders under `manim/**/media/`;
 - scratch files declared in `output_manifest.json` as temporary;
 - stale intermediate prompts or extracted snippets that were superseded by ledgers.

@@ -9,11 +9,11 @@
     "modelPolicy": "Every graph and every agent node uses model: inherit unless a user explicitly overrides it in Pi."
   },
   "paths": {
-    "temporaryRoot": ".pi-gnosis/tmp",
+    "temporaryRoot": "/tmp/pi-gnosis",
     "obsidianRoot": "notes",
     "profileNote": "notes/profile.md",
-    "manimRoot": "manim",
-    "interactiveArtifactRoot": ".pi-gnosis/tmp/interactive-artifacts"
+    "manimRoot": "/tmp/pi-gnosis/manim",
+    "interactiveArtifactRoot": "/tmp/pi-gnosis/interactive-artifacts"
   },
   "webTools": {
     "required": [
@@ -41,19 +41,19 @@
     "writes": {
       "default": "manifest-first",
       "safeRoots": [
-        ".pi-gnosis/tmp",
-        ".pi-gnosis/tmp/interactive-artifacts",
+        "/tmp/pi-gnosis",
+        "/tmp/pi-gnosis/interactive-artifacts",
         "notes",
         "manim"
       ],
-      "deletePolicy": "cleanup graph may delete only temporary files under .pi-gnosis/tmp unless the user explicitly authorizes deleting generated media."
+      "deletePolicy": "cleanup graph may delete only temporary files under /tmp/pi-gnosis unless the user explicitly authorizes deleting generated media."
     },
     "modalities": {
       "conversation": "Text, ASCII diagrams, and markdown stay in the Pi conversation.",
       "video": "Manim is the video and lecture engine.",
       "page": "zero-native is the native temporary page engine.",
       "lab": "Geist learning patterns plus zero-native create cooler pages, widgets, and explorable labs.",
-      "durableNotes": "Obsidian stores learner-readable notes and the optional profile note; temporary pages and labs do not become memory by default."
+      "durableNotes": "Obsidian stores learner-readable notes and the optional profile note; temporary pages and labs do not become memory by default. Disposable work lives under /tmp/pi-gnosis by default."
     }
   }
 }

@@ -45,11 +45,11 @@ The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generat
 | --- | --- | --- |
 | Text / ASCII / markdown | Pi conversation | Conversation only unless copied into notes |
 | Video / lecture | Manim | Generated project/media under configured Manim root |
-| Temporary page | zero-native | Disposable artifact under `.pi-gnosis/tmp/interactive-artifacts` |
+| Temporary page | zero-native | Disposable artifact under `/tmp/pi-gnosis/interactive-artifacts` |
 | Cooler page / widget / explorable lab | Geist learning patterns + zero-native | Disposable artifact; user-facing notes are written into Obsidian |
 | Durable notes | Obsidian | Source of truth for what the learner keeps |
 
-Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt. The note/profile paths are config-fed; `notes/` is only the default example.
+Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt. The note/profile paths are config-fed; `notes/` is only the default example. Disposable work defaults under `/tmp/pi-gnosis`.
 
 ## Credits
 
@@ -62,7 +62,6 @@ Required:
 - `@darkhorseprojects/pi-circuitry` ^0.2.21
 - `pi-web-access` ^0.10.7
 - `zero-native` ^0.2.0 for temporary native pages and interactive labs
-
 Optional:
 - `pi-exa-search` for Exa-first source discovery
 

@@ -18,8 +18,8 @@ function cleanPath(p) {
 
 export function classifyArtifact(path, options = {}) {
   const p = cleanPath(path);
-  const tempRoot = cleanPath(options.tempRoot || '.pi-gnosis/tmp');
-  const manimRoot = cleanPath(options.manimRoot || 'manim');
+  const tempRoot = cleanPath(options.tempRoot || '/tmp/pi-gnosis');
+  const manimRoot = cleanPath(options.manimRoot || '/tmp/pi-gnosis/manim');
   if (!p || p.includes('..')) return { path: p, category: 'unknown', protected: true, reason: 'empty or parent traversal' };
   if (PROTECTED_PATTERNS.some((re) => re.test(p))) return { path: p, category: 'protected', protected: true, reason: 'protected artifact type' };
   if (p === tempRoot || p.startsWith(`${tempRoot}/`)) return { path: p, category: 'temporary', protected: false, reason: 'inside configured temporary root' };

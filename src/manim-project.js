@@ -5,7 +5,7 @@ function slugify(s) {
   return String(s || 'lecture').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'lecture';
 }
 
-export function buildManimProject({ topic = 'Obsidian notes for learning', outputRoot = 'manim', write = false } = {}) {
+export function buildManimProject({ topic = 'Obsidian notes for learning', outputRoot = '/tmp/pi-gnosis/manim', write = false } = {}) {
   const slug = slugify(topic);
   const projectRoot = resolve(outputRoot, slug);
   const sceneSpec = {

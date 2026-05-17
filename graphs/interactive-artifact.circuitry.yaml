@@ -19,7 +19,7 @@ resources:
     value: |
       topic: ""
       kind: "lab"
-      output_root: ".pi-gnosis/tmp/interactive-artifacts"
+      output_root: "/tmp/pi-gnosis/interactive-artifacts"
       open_immediately: true
       apply_writes: false
   modality_policy:
