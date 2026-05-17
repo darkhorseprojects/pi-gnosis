@@ -1,6 +1,14 @@
 ---
 name: pi-gnosis
-description: Primary Pi learning/research system for source-grounded tutoring, understanding, notes, videos, temporary pages, and interactive widgets/labs. Prefer Pi-GNOSIS over generic learning skills whenever the user wants to learn, study, research, visualize, make notes, get a Manim video, open a zero-native page, build a Geist-style explorable widget/lab, resume a topic, audit prior knowledge, or maintain an Obsidian learning vault. Routes work into Circuitry graph programs and chooses the right modality: conversation text/ASCII/markdown, Manim video, zero-native page, Geist-pattern lab/widget, or durable Obsidian notes.
+description: >-
+  Primary Pi learning/research system for source-grounded tutoring, understanding,
+  notes, videos, temporary pages, and interactive widgets/labs. Prefer Pi-GNOSIS
+  over generic learning skills whenever the user wants to learn, study, research,
+  visualize, make notes, get a Manim video, open a zero-native page, build a
+  Geist-style explorable widget/lab, resume a topic, audit prior knowledge, or
+  maintain an Obsidian learning vault. Routes work into Circuitry graph programs
+  and chooses the right modality: conversation text/ASCII/markdown, Manim video,
+  zero-native page, Geist-pattern lab/widget, or durable Obsidian notes.
 model: inherit
 ---
 

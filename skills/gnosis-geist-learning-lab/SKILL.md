@@ -1,6 +1,10 @@
 ---
 name: gnosis-geist-learning-lab
-description: Pi-GNOSIS bundled skill for designing Geist-style interactive learning labs/widgets on zero-native surfaces. Use with pi-gnosis when creating temporary explorable explanations, prediction/feedback widgets, parameter explorers, code-learning labs, or active-recall pages.
+description: >-
+  Pi-GNOSIS bundled skill for designing Geist-style interactive learning labs/widgets
+  on zero-native surfaces. Use with pi-gnosis when creating temporary explorable
+  explanations, prediction/feedback widgets, parameter explorers, code-learning
+  labs, or active-recall pages.
 author: Vercel Labs
 source: https://github.com/vercel-labs/skill-geist-learning-labs
 model: inherit
