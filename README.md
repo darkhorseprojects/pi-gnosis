@@ -54,7 +54,7 @@ Interactive artifacts are active-learning surfaces, not permanent memory. Every 
 ## Credits
 
 - Native temporary pages use [Vercel Labs zero-native](https://github.com/vercel-labs/zero-native).
-- Geist-style labs/widgets are inspired by [Vercel Labs skill-geist-learning-labs](https://github.com/vercel-labs/skill-geist-learning-labs). Pi-GNOSIS incorporates the learning patterns directly instead of installing a second competing learning skill by default.
+- Geist-style labs/widgets use the bundled `gnosis-geist-learning-lab` skill. Upstream: [Vercel Labs skill-geist-learning-labs](https://github.com/vercel-labs/skill-geist-learning-labs).
 
 ## Dependencies
 

@@ -70,11 +70,12 @@ resources:
     identity: "Zero-Native Surface Planner"
     model: inherit
     inputs: [artifact_request, learning_loop_designer, modality_policy]
-    skills: [pi-gnosis]
+    skills: [pi-gnosis, gnosis-geist-learning-lab]
     tools: []
     expect:
       engine: str
       design_system: str
+      credited_skill: str
       components:
         type: list
         items: str
@@ -87,7 +88,7 @@ resources:
         type: list
         items: str
     instructions: |
-      Plan a zero-native page. For kind=lab, use Geist learning patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. Keep native policy strict: system WebView, no bridge unless explicitly required, no external navigation. Output only valid JSON matching expect.
+      Plan a zero-native page. For kind=lab, use the bundled gnosis-geist-learning-lab skill and select patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. Set credited_skill to gnosis-geist-learning-lab for lab/widget artifacts. Keep native policy strict: system WebView, no bridge unless explicitly required, no external navigation. Output only valid JSON matching expect.
   artifact_writer:
     type: agent
     identity: "Interactive Artifact Writer"

@@ -1,7 +1,7 @@
 {
   "name": "pi-gnosis",
   "package": "pi-gnosis",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "kind": "pi-package",
   "description": "Circuitry-first Pi package that turns research and tutoring plans into executable Circuitry graph programs.",
   "dependsOn": {
@@ -13,7 +13,7 @@
   },
   "credits": {
     "zeroNative": "Vercel Labs zero-native: https://github.com/vercel-labs/zero-native",
-    "geistLearningLabs": "Inspired by Vercel Labs skill-geist-learning-labs: https://github.com/vercel-labs/skill-geist-learning-labs"
+    "geistLearningLabs": "Vercel Labs skill-geist-learning-labs: https://github.com/vercel-labs/skill-geist-learning-labs"
   },
   "runtimeDefaults": {
     "provider": "pi",
@@ -22,6 +22,7 @@
   "entrypoints": {
     "skill": "skills/pi-gnosis/SKILL.md",
     "manimSkill": "skills/manim-video/SKILL.md",
+    "geistLearningLabSkill": "skills/gnosis-geist-learning-lab/SKILL.md",
     "config": "config/gnosis.config.json",
     "graphs": {
       "research": "graphs/research.circuitry.yaml",

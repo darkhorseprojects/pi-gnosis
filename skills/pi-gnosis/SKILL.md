@@ -18,7 +18,7 @@ Circuitry is the agentic programming layer. The graphs are the multi-agent simul
 - Need one tutoring turn, diagnosis, feedback, or next step: run `graphs/tutoring-session.circuitry.yaml`.
 - Need Obsidian notes or vault update: run `graphs/note-export.circuitry.yaml`.
 - Need video/lecture/visual explanation: run `graphs/manim-lecture.circuitry.yaml` and let its Manim agent load `manim-video`.
-- Need a temporary page, native learning surface, explorable widget, or interactive lab: run `graphs/interactive-artifact.circuitry.yaml`. Pages use zero-native. Labs/widgets use Geist learning patterns plus zero-native.
+- Need a temporary page, native learning surface, explorable widget, or interactive lab: run `graphs/interactive-artifact.circuitry.yaml`. Pages use zero-native. Labs/widgets use the bundled `gnosis-geist-learning-lab` skill plus zero-native; that skill credits Vercel Labs' original skill-geist-learning-labs.
 - Need to clean temp artifacts after a run: run `graphs/cleanup.circuitry.yaml`.
 - Need a quick dependency smoke check: run `graphs/minimal-smoke.circuitry.yaml`.
 
@@ -33,7 +33,7 @@ Ask at most one useful preference question before starting, unless the user alre
 - Text, ASCII diagrams, and markdown stay in the Pi conversation.
 - Video and lecture artifacts use Manim.
 - Pages use zero-native.
-- Cooler pages, widgets, and explorable labs use Geist learning patterns plus zero-native.
+- Cooler pages, widgets, and explorable labs use `gnosis-geist-learning-lab` plus zero-native.
 - Durable learner notes use Obsidian/note-export. Temporary pages and labs are not memory unless the learner promotes notes.
 
 Move on when the learner demonstrates understanding through open-ended evidence, not because a script says the section is done.

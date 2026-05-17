@@ -1,6 +1,6 @@
 {
   "name": "@darkhorseprojects/pi-gnosis",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Circuitry-first Pi package for source-grounded research, non-linear tutoring, Obsidian learning memory, and Manim lecture generation.",
   "type": "module",
   "license": "Apache-2.0",
@@ -31,7 +31,8 @@
     "./storage-contract": "./src/storage-contract.js",
     "./probe-policy": "./src/probe-policy.js",
     "./cleanup-policy": "./src/cleanup-policy.js",
-    "./manim-project": "./src/manim-project.js"
+    "./manim-project": "./src/manim-project.js",
+    "./interactive-artifact": "./src/interactive-artifact.js"
   },
   "files": [
     "bin/",
@@ -44,7 +45,6 @@
     "examples/",
     "README.md",
     "pi.json",
-    "NOTICE",
     "CHANGELOG.md"
   ],
   "scripts": {
