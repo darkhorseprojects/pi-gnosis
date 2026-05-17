@@ -1,7 +1,7 @@
 {
   "name": "pi-gnosis",
   "package": "pi-gnosis",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "kind": "pi-package",
   "description": "Circuitry-first Pi package that turns research and tutoring plans into executable Circuitry graph programs.",
   "dependsOn": {
@@ -41,7 +41,7 @@
     "web-search-via-pi-web-access",
     "optional-exa-source-discovery",
     "open-ended-diagnostic-probing",
-    "knowledge-tracing-dag-state",
+    "obsidian-first-learning-memory",
     "obsidian-compatible-note-export",
     "manim-lecture-generation",
     "zero-native-temporary-pages",

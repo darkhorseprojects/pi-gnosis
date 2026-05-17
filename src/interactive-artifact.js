@@ -219,7 +219,7 @@ function packageJson({ slug }) {
   }, null, 2) + '\n';
 }
 
-export function buildInteractiveArtifact({ topic = 'knowledge tracing DAGs', kind = 'lab', outputRoot = '.pi-gnosis/tmp/interactive-artifacts', write = false } = {}) {
+export function buildInteractiveArtifact({ topic = 'Obsidian notes and active recall', kind = 'lab', outputRoot = '.pi-gnosis/tmp/interactive-artifacts', write = false } = {}) {
   if (!ARTIFACT_KINDS.has(kind)) throw new Error(`Unknown interactive artifact kind: ${kind}`);
   const slug = `${kind}-${slugify(topic)}`;
   const artifactRoot = resolve(outputRoot, slug);

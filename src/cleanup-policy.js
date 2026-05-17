@@ -1,12 +1,8 @@
 import { relative, normalize } from 'node:path';
 
 const PROTECTED_PATTERNS = [
-  /^\.pi-gnosis\/state\//,
   /^notes\//,
-  /source_ledger\.json$/,
-  /claim_ledger\.json$/,
-  /kt_dag\.json$/,
-  /learner_state\.json$/,
+  /profile\.md$/,
   /final\.(mp4|mov|webm)$/,
   /script\.py$/,
   /package\.json$/,

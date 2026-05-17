@@ -1,7 +1,7 @@
 circuitry: "0.2"
 title: "Pi-GNOSIS Manim Lecture Program"
 description: |
-  Frozen Circuitry program for generating a Manim CE lecture project from researched/KT state. The Manim-producing agent directly loads the bundled manim-video skill.
+  Frozen Circuitry program for generating a Manim CE lecture project from current notes and research context. The Manim-producing agent directly loads the bundled manim-video skill.
 runtime:
   provider: pi
   model: inherit
@@ -18,7 +18,8 @@ resources:
     label: "Lecture request"
     value: |
       topic: ""
-      dag_state_path: ".pi-gnosis/state"
+      notes_root: "notes"
+      profile_note: "notes/profile.md"
       output_root: "manim"
       render: "draft-if-environment-ready"
       apply_writes: false
@@ -53,7 +54,7 @@ resources:
         type: list
         items: str
     instructions: |
-      Read DAG state when available. Extract concepts, misconceptions, source ids, and learner bottlenecks relevant to the requested lecture. Do not write. Output only valid JSON matching expect.
+      Read available notes when present. Extract concepts, misconceptions, source ids, and learner bottlenecks relevant to the requested lecture. Do not write. Output only valid JSON matching expect.
   lecture_storyboarder:
     type: agent
     identity: "Manim Lecture Storyboarder"

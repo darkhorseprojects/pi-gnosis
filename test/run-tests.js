@@ -51,14 +51,16 @@ const schedule = buildReviewSchedule([
 assert.equal(schedule[0].first_review_date, '2026-05-17');
 assert.equal(schedule[1].first_review_date, '2026-05-26');
 
-const plan = storagePlan({ topic: 'DAG vs Obsidian' });
-assert.match(plan.canonical.root, /dag-vs-obsidian/);
-assert.match(plan.obsidian.root, /dag-vs-obsidian/);
+const plan = storagePlan({ topic: 'Obsidian notes' });
+assert.match(plan.obsidian.root, /obsidian-notes/);
+assert.match(plan.obsidian.profile, /notes\/profile\.md$/);
+assert.match(plan.manim.root, /obsidian-notes/);
+assert.match(plan.interactive.root, /obsidian-notes/);
 
 const cleanup = planCleanup([
   '.pi-gnosis/tmp/run-a/scratch.md',
-  '.pi-gnosis/state/run-a/source_ledger.json',
   'notes/topic/00-map.md',
+  'notes/profile.md',
   'manim/topic/media/videos/script/480p15/OpeningMap.mp4',
 ], { applyCleanup: true, allowGeneratedMediaCleanup: false });
 assert.equal(cleanup[0].allowed_now, true);
@@ -67,7 +69,7 @@ assert.equal(cleanup[2].allowed_now, false);
 assert.equal(cleanup[3].allowed_now, false);
 
 const tmp = mkdtempSync(resolve(tmpdir(), 'pi-gnosis-manim-'));
-const project = buildManimProject({ topic: 'KT DAGs', outputRoot: tmp, write: true });
+const project = buildManimProject({ topic: 'Obsidian notes', outputRoot: tmp, write: true });
 for (const file of ['plan.md', 'scene_spec.json', 'script.py', 'render.sh', 'README.md']) {
   assert.equal(existsSync(resolve(project.projectRoot, file)), true);
 }

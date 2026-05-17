@@ -1,7 +1,7 @@
 circuitry: "0.2"
 title: "Pi-GNOSIS Obsidian Export Program"
 description: |
-  Frozen Circuitry program that turns canonical DAG state into learner-facing Obsidian-compatible notes under a safe notes root.
+  Frozen Circuitry program that turns the learner's existing notes and current session context into learner-facing Obsidian-compatible notes under a safe notes root.
 runtime:
   provider: pi
   model: inherit
@@ -18,7 +18,8 @@ resources:
     label: "Note export request"
     value: |
       topic: ""
-      dag_state_path: ".pi-gnosis/state"
+      notes_root: "notes"
+      profile_note: "notes/profile.md"
       note_path: "notes"
       apply_writes: false
       overwrite_policy: "preserve-user-edits"
@@ -26,34 +27,34 @@ resources:
     type: text
     label: "Obsidian contract"
     value: |
-      Obsidian is learner-facing memory, not canonical source truth. Export 00-map.md, source-ledger.md, concepts/*.md, misconceptions.md, probes.md, review-plan.md, reflection-log.md, and manifest.md. Preserve user edits where possible. Link concepts, sources, and probes.
+      Obsidian is learner-facing memory and the source of truth for durable study material. Export 00-map.md, profile.md, source-ledger.md, concepts/*.md, misconceptions.md, probes.md, review-plan.md, reflection-log.md, sessions/*.md, and manifest.md. Preserve user edits where possible. Link concepts, sources, probes, and session notes.
   write_policy:
     type: text
     label: "Write policy"
     value: |
       Manifest first. Write only under the configured note_path. Do not delete notes. Do not overwrite user-authored sections unless explicitly asked. Mark generated sections with stable headers so future runs can update them safely.
-  dag_state_importer:
+  note_state_reader:
     type: agent
-    identity: "DAG State Importer"
+    identity: "Obsidian Note Reader"
     model: inherit
     inputs: [export_request, obsidian_contract]
     skills: [pi-gnosis]
     tools: [read_file, grep]
     expect:
-      imported_state_summary: str
+      imported_note_summary: str
       source_ledger_available: bool
-      claim_ledger_available: bool
-      kt_dag_available: bool
+      concept_notes_available: bool
+      session_notes_available: bool
       missing_inputs:
         type: list
         items: str
     instructions: |
-      Read only the requested DAG state. Summarize available ledgers and missing inputs. Do not write. Output only valid JSON matching expect.
+      Read the requested notes only. Summarize available note sections and missing inputs. Do not write. Output only valid JSON matching expect.
   note_plan_builder:
     type: agent
     identity: "Obsidian Note Plan Builder"
     model: inherit
-    inputs: [dag_state_importer, obsidian_contract, write_policy]
+    inputs: [note_state_reader, obsidian_contract, write_policy]
     skills: [pi-gnosis]
     tools: []
     expect:
@@ -75,7 +76,7 @@ resources:
     type: agent
     identity: "Obsidian Note Writer"
     model: inherit
-    inputs: [note_plan_builder, dag_state_importer, obsidian_contract, write_policy]
+    inputs: [note_plan_builder, note_state_reader, obsidian_contract, write_policy]
     skills: [pi-gnosis]
     tools: [read_file, write_file, edit_file]
     expect:
@@ -95,7 +96,7 @@ resources:
     type: agent
     identity: "Obsidian Note Quality Gate"
     model: inherit
-    inputs: [note_writer, obsidian_contract, dag_state_importer]
+    inputs: [note_writer, obsidian_contract, note_state_reader]
     skills: [pi-gnosis]
     tools: [read_file, grep]
     expect:

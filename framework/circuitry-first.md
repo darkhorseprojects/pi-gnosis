@@ -15,4 +15,4 @@ Do not compress the workflow into one giant Pi prompt. Use top-level Pi skill in
 
 ## Why this is better than text instructions
 
-Text instructions make one top-level agent remember every concern at once. Circuitry lets Pi run delegated programs with explicit context boundaries: one agent plans queries, another curates sources, another extracts claims, another builds a KT DAG, another writes notes, another creates a Manim project, and a final agent audits results.
+Text instructions make one top-level agent remember every concern at once. Circuitry lets Pi run delegated programs with explicit context boundaries: one agent plans queries, another curates sources, another extracts claims, another writes notes, another creates a Manim project, and a final agent audits results.

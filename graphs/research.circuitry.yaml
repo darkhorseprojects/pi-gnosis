@@ -1,7 +1,7 @@
 circuitry: "0.2"
 title: "Pi-GNOSIS Research Program"
 description: |
-  Frozen Circuitry program for delegated source-grounded research. The graph is the multi-agent workflow: scope, query planning, source discovery, fetching, claim extraction, critique, and KT-DAG seeding.
+  Frozen Circuitry program for delegated source-grounded research. The graph is the multi-agent workflow: scope, query planning, source discovery, fetching, claim extraction, critique, and Obsidian note planning.
 runtime:
   provider: pi
   model: inherit
@@ -19,9 +19,10 @@ resources:
     value: |
       topic: "automated research pipelines and agentic tutors"
       purpose: "learn"
-      output_modes: ["dag_state", "obsidian_notes"]
+      output_modes: ["obsidian_notes"]
       note_path: "notes"
-      dag_state_path: ".pi-gnosis/state"
+      notes_root: "notes"
+      profile_note: "notes/profile.md"
       depth: "working"
       learner_context: ""
       constraints: ""
@@ -52,7 +53,7 @@ resources:
     type: text
     label: "Storage contract"
     value: |
-      DAG state is canonical: source ledgers, claim ledgers, KT DAG, learner state, probe outcomes, review schedules, and manifests. Obsidian is learner-facing memory: notes, links, reflections, and study prompts.
+      Obsidian is canonical: source notes, claim notes, concept notes, learner reflections, probe outcomes, review prompts, and manifests. Temporary research artifacts may exist only while the graph runs.
   prior_knowledge_audit:
     type: agent
     identity: "Prior Knowledge Auditor"
@@ -74,7 +75,7 @@ resources:
         items: str
       confidence: str
     instructions: |
-      Read only if note paths or prior DAG state are available. Infer prior knowledge only from user-provided context, existing notes, or prior state. If no readable notes exist, say so. Output only valid JSON matching expect.
+      Read only if note paths or prior notes are available. Infer prior knowledge only from user-provided context or existing notes. If no readable notes exist, say so. Output only valid JSON matching expect.
   scope_architect:
     type: agent
     identity: "Research Scope Architect"
@@ -256,17 +257,17 @@ resources:
       verdict: str
     instructions: |
       Audit the claim ledger. Flag unsupported claims, missing source classes, stale evidence, and overbroad synthesis. This is a quality gate before teaching artifacts. Output only valid JSON matching expect.
-  kt_dag_seed_builder:
+  concept_note_plan_builder:
     type: agent
-    identity: "KT DAG Seed Builder"
+    identity: "Concept Note Plan Builder"
     model: inherit
     inputs: [claim_extractor, synthesis_critic, prior_knowledge_audit, learning_policy, storage_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      kt_dag:
+      concept_note_plan:
         type: dict
-      concept_nodes:
+      concept_notes:
         type: list
         items:
           id: str
@@ -278,26 +279,23 @@ resources:
             type: list
             items: str
           misconception_risk: int
-          decay_risk: int
-      learner_state_update:
+          review_risk: int
+      learner_note_update:
         type: dict
       recommended_next_graphs:
         type: list
         items: str
     instructions: |
-      Build a transparent KT DAG seed: concepts, prerequisite edges, contrast edges, misconception risks, decay risks, and learner evidence. Do not mark mastery without open-ended evidence. Recommend follow-up graphs, such as tutoring-session, note-export, or manim-lecture. Output only valid JSON matching expect.
+      Build a transparent Obsidian note plan: concepts, prerequisite links, contrast notes, misconception risks, review risks, and learner evidence. Do not mark mastery without open-ended evidence. Recommend follow-up graphs, such as tutoring-session, note-export, or manim-lecture. Output only valid JSON matching expect.
   research_output_manifest:
     type: agent
     identity: "Research Output Manifest Writer"
     model: inherit
-    inputs: [source_ledger_builder, claim_extractor, synthesis_critic, kt_dag_seed_builder, storage_contract]
+    inputs: [source_ledger_builder, claim_extractor, synthesis_critic, concept_note_plan_builder, storage_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      dag_state_files_to_write:
-        type: list
-        items: str
-      obsidian_exports_to_offer:
+      obsidian_notes_to_write:
         type: list
         items: str
       temp_artifacts:

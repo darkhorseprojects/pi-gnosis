@@ -15,6 +15,6 @@ Allowed probe types:
 - teach-back;
 - source check.
 
-Why: recognition-only formats can hide shallow familiarity. Open-ended probes make the learner externalize reasoning, reveal misconceptions, and produce evidence that can update the KT DAG.
+Why: recognition-only formats can hide shallow familiarity. Open-ended probes make the learner externalize reasoning, reveal misconceptions, and produce evidence that can update the learner's notes.
 
-Answer keys and rubrics may exist, but they should be hidden below the prompt or kept in the DAG state until after the learner attempts the probe.
+Answer keys and rubrics may exist, but they should be hidden below the prompt or kept out of view until after the learner attempts the probe.

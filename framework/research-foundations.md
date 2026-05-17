@@ -12,11 +12,11 @@ Citation integrity remains a hard failure mode. Generated reviews can look polis
 
 Agentic RAG and multi-agent RAG research motivate decomposing retrieval-heavy tasks into planning, source discovery, extraction, and synthesis agents. Multi-agent RAG work such as MA-RAG uses planner/extractor/QA-style roles to handle ambiguous, multi-hop information seeking. Design implication: the research graph is a Circuitry program with role-specific agents and whitelisted web tools, not a single web-search prompt.
 
-## Intelligent tutoring and KT
+## Intelligent tutoring and note-backed memory
 
-Intelligent tutoring systems traditionally maintain a learner model and use interactions to update the estimate of what the learner understands. Knowledge tracing estimates learner knowledge from interactions, but modern reviews warn that high predictive accuracy and interpretability do not always coexist. Design implication: Pi-GNOSIS stores transparent evidence records in the KT DAG instead of opaque mastery labels.
+Intelligent tutoring systems traditionally maintain a learner model and use interactions to update the estimate of what the learner understands. Knowledge tracing estimates learner knowledge from interactions, but modern reviews warn that high predictive accuracy and interpretability do not always coexist. Design implication: Pi-GNOSIS keeps the durable record in Obsidian notes instead of an opaque mastery store.
 
-LLM tutoring papers warn that being good at solving problems is not the same as being good at tutoring. Design implication: Pi-GNOSIS separates subject research, learner-state modeling, probing, feedback, and next-turn planning.
+LLM tutoring papers warn that being good at solving problems is not the same as being good at tutoring. Design implication: Pi-GNOSIS separates subject research, note writing, probing, feedback, and next-turn planning.
 
 ## Open-ended probing
 

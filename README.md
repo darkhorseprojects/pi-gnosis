@@ -16,15 +16,15 @@ Source-grounded research and non-linear tutoring for [Pi](https://github.com/ear
 - **zero-native pages**: Generate temporary native learning pages that open as disposable study surfaces
 - **Geist-style labs/widgets**: Generate explorable attempt→feedback learning labs using Geist learning patterns on zero-native surfaces
 - **Conversation-native text**: Keep text, ASCII diagrams, and markdown in the Pi conversation when no artifact is needed
-- **Knowledge tracing**: DAG state tracks understanding depth over time
+- **Obsidian-first memory**: Notes, reflections, and prompts are the durable learning surface
 
 ## Graph Programs
 
 | Graph | Purpose |
 | --- | --- |
-| `graphs/research.circuitry.yaml` | Delegated research pipeline: scope, query planning, source discovery, fetching, claim extraction, critique, KT DAG seed |
+| `graphs/research.circuitry.yaml` | Delegated research pipeline: scope, query planning, source discovery, fetching, claim extraction, critique, and Obsidian note planning |
 | `graphs/tutoring-session.circuitry.yaml` | Non-linear tutoring turn planner with open-ended probes and state updates |
-| `graphs/note-export.circuitry.yaml` | Obsidian-compatible note export from canonical DAG state |
+| `graphs/note-export.circuitry.yaml` | Obsidian note export and refresh from durable notes |
 | `graphs/manim-lecture.circuitry.yaml` | Video/lecture project generation using bundled manim-video skill |
 | `graphs/interactive-artifact.circuitry.yaml` | Temporary zero-native pages and Geist-style explorable labs/widgets |
 | `graphs/cleanup.circuitry.yaml` | Safe cleanup pass for temporary artifacts created by graph runs |
@@ -43,11 +43,11 @@ The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generat
 
 | Modality | Engine | Persistence |
 | --- | --- | --- |
-| Text / ASCII / markdown | Pi conversation | Conversation only unless exported |
+| Text / ASCII / markdown | Pi conversation | Conversation only unless copied into notes |
 | Video / lecture | Manim | Generated project/media under configured Manim root |
 | Temporary page | zero-native | Disposable artifact under `.pi-gnosis/tmp/interactive-artifacts` |
-| Cooler page / widget / explorable lab | Geist learning patterns + zero-native | Disposable artifact; learner notes are exported separately |
-| Durable notes | Obsidian-compatible note export | Learner-readable permanent notes |
+| Cooler page / widget / explorable lab | Geist learning patterns + zero-native | Disposable artifact; user-facing notes are written into Obsidian |
+| Durable notes | Obsidian | Source of truth for what the learner keeps |
 
 Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt.
 

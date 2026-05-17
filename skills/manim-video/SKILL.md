@@ -51,4 +51,4 @@ Use Manim Community Edition to create educational videos and animated lectures. 
 
 ## Safety and side effects
 
-Write only inside the requested Manim output root. Do not delete source scripts, final videos, note exports, or DAG state. Media cache cleanup belongs to the cleanup graph.
+Write only inside the requested Manim output root. Do not delete source scripts, final videos, or note exports. Media cache cleanup belongs to the cleanup graph.

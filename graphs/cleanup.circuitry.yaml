@@ -18,7 +18,6 @@ resources:
     label: "Cleanup request"
     value: |
       run_id: ""
-      dag_state_path: ".pi-gnosis/state"
       temp_path: ".pi-gnosis/tmp"
       manim_root: "manim"
       apply_cleanup: false
@@ -27,7 +26,7 @@ resources:
     type: text
     label: "Cleanup policy"
     value: |
-      Default is plan-only. Safe deletion is restricted to temporary files under .pi-gnosis/tmp. Generated Manim media may be proposed for cleanup, but only deleted if allow_generated_media_cleanup is true. Never delete DAG state, source ledgers, claim ledgers, notes, final videos, scripts, configs, or user-authored files.
+      Default is plan-only. Safe deletion is restricted to temporary files under .pi-gnosis/tmp. Generated Manim media may be proposed for cleanup, but only deleted if allow_generated_media_cleanup is true. Never delete notes, final videos, scripts, configs, or user-authored files.
   artifact_census:
     type: agent
     identity: "Artifact Census Agent"

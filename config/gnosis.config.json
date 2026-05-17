@@ -9,9 +9,9 @@
     "modelPolicy": "Every graph and every agent node uses model: inherit unless a user explicitly overrides it in Pi."
   },
   "paths": {
-    "dagStateRoot": ".pi-gnosis/state",
     "temporaryRoot": ".pi-gnosis/tmp",
     "obsidianRoot": "notes",
+    "profileNote": "notes/profile.md",
     "manimRoot": "manim",
     "interactiveArtifactRoot": ".pi-gnosis/tmp/interactive-artifacts"
   },
@@ -41,7 +41,6 @@
     "writes": {
       "default": "manifest-first",
       "safeRoots": [
-        ".pi-gnosis/state",
         ".pi-gnosis/tmp",
         ".pi-gnosis/tmp/interactive-artifacts",
         "notes",
@@ -54,7 +53,7 @@
       "video": "Manim is the video and lecture engine.",
       "page": "zero-native is the native temporary page engine.",
       "lab": "Geist learning patterns plus zero-native create cooler pages, widgets, and explorable labs.",
-      "durableNotes": "Obsidian/note-export stores learner-readable notes; temporary pages and labs do not become memory by default."
+      "durableNotes": "Obsidian stores learner-readable notes and the optional profile note; temporary pages and labs do not become memory by default."
     }
   }
 }

@@ -1,17 +1,19 @@
 # Obsidian note contract
 
-Obsidian export is optional, but this package assumes many Pi users will actually use it.
+Obsidian is the source of truth for durable learner memory.
 
 Each topic export should contain:
 
 ```text
 00-map.md
+profile.md
 source-ledger.md
 concepts/<concept>.md
 misconceptions.md
 probes.md
 review-plan.md
 reflection-log.md
+sessions/<session>.md
 manifest.md
 ```
 
@@ -23,9 +25,9 @@ Concept notes should include:
 - contrasts;
 - examples;
 - common wrong variants;
-- source support ids;
+- source links or ids;
 - open-ended retrieval prompts;
 - transfer prompts;
-- links to related notes.
+- blanks or questions for the learner to fill in.
 
-Obsidian files are learner memory. Do not treat them as the canonical source ledger unless the DAG state has imported and validated them.
+Obsidian files are learner memory. If a note needs to be used by Pi later, write it here rather than hiding it in a separate state store.

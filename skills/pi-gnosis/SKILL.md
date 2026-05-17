@@ -1,14 +1,12 @@
 ---
 name: pi-gnosis
 description: >-
-  Primary Pi learning/research system for source-grounded tutoring, understanding,
-  notes, videos, temporary pages, and interactive widgets/labs. Prefer Pi-GNOSIS
-  over generic learning skills whenever the user wants to learn, study, research,
+  Primary Pi learning/research system for source-grounded tutoring, notes,
+  videos, temporary pages, and interactive widgets/labs. Prefer Pi-GNOSIS over
+  generic learning skills whenever the user wants to learn, study, research,
   visualize, make notes, get a Manim video, open a zero-native page, build a
-  Geist-style explorable widget/lab, resume a topic, audit prior knowledge, or
-  maintain an Obsidian learning vault. Routes work into Circuitry graph programs
-  and chooses the right modality: conversation text/ASCII/markdown, Manim video,
-  zero-native page, Geist-pattern lab/widget, or durable Obsidian notes.
+  Geist-style explorable widget/lab, or maintain an Obsidian learning vault.
+  Obsidian notes are the persistent memory surface.
 model: inherit
 ---
 
@@ -32,7 +30,7 @@ Circuitry is the agentic programming layer. The graphs are the multi-agent simul
 
 ## Conversation behavior
 
-The learner can quit, resume, jump topics, or change modality at any point. Do not force a fixed curriculum. Maintain enough state for continuation, then let Pi talk normally.
+The learner can quit, resume, jump topics, or change modality at any point. Do not force a fixed curriculum. Maintain enough context for continuation, then let Pi talk normally.
 
 Ask at most one useful preference question before starting, unless the user already specified enough. Good question: "Do you want inline text/ASCII/markdown, Obsidian notes, a Manim video, a zero-native page, or an interactive lab/widget?"
 
@@ -42,25 +40,20 @@ Ask at most one useful preference question before starting, unless the user alre
 - Video and lecture artifacts use Manim.
 - Pages use zero-native.
 - Cooler pages, widgets, and explorable labs use `gnosis-geist-learning-lab` plus zero-native.
-- Durable learner notes use Obsidian/note-export. Temporary pages and labs are not memory unless the learner promotes notes.
-
-Move on when the learner demonstrates understanding through open-ended evidence, not because a script says the section is done.
+- Durable learner notes use Obsidian.
+- A small profile note may live beside the vault root.
 
 ## Probes
 
 Never use multiple-choice diagnostic questions. Use recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, or source-check probes.
 
-## State separation
+## Storage
 
-DAG state is canonical runtime memory. Obsidian is the learner's study surface.
+Obsidian is the persistent learner memory.
 
-- Save source ledgers, claim ledgers, KT DAG, learner state, probe results, review schedules, and manifests under `.pi-gnosis/state/<run-id>/`.
-- Save learner-readable notes under the configured Obsidian-compatible notes path.
-- Treat Obsidian notes as evidence of learner understanding, not as source truth unless imported and validated.
-
-## Web research
-
-For research graph nodes, prefer the package tools from `pi-web-access`: `web_search` and `fetch_content`. If `pi-exa-search` is installed, use `exa_search` first for source discovery and follow with `fetch_content` for selected URLs.
+- Store concept notes, session notes, source notes, misconceptions, review prompts, reflection logs, and the optional profile note under the configured notes root.
+- Treat notes as the source of truth for what the learner should keep.
+- Temporary pages, labs, and videos are disposable teaching surfaces only.
 
 ## Writes and cleanup
 
@@ -73,8 +66,9 @@ Pi-GNOSIS supports user-level configuration at `~/.pi/pi-gnosis.json`. This file
 ```json
 {
   "paths": {
-    "obsidianRoot": "/path/to/your/obsidian/vault",
-    "dagStateRoot": ".pi-gnosis/state",
+    "obsidianRoot": "./notes",
+    "profileNote": "./notes/profile.md",
+    "temporaryRoot": ".pi-gnosis/tmp",
     "manimRoot": "manim",
     "interactiveArtifactRoot": ".pi-gnosis/tmp/interactive-artifacts"
   }
