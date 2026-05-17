@@ -93,7 +93,7 @@ function htmlFor({ topic, kind }) {
 </head>
 <body>
   <main>
-    <div class="eyebrow">Pi-GNOSIS ${kind === 'lab' ? 'Geist-style lab' : 'zero-native page'}</div>
+    <div class="eyebrow">pi-gnosis ${kind === 'lab' ? 'Geist-style lab' : 'zero-native page'}</div>
     <h1>${safeTitle}</h1>
     <p class="lede">${safeObjective} This surface is temporary: use it to think, then keep your own notes.</p>
 
@@ -259,7 +259,7 @@ export function buildInteractiveArtifact({ topic = 'Obsidian notes and active re
   };
   const readme = `# ${copy.title}
 
-Temporary Pi-GNOSIS ${kind === 'lab' ? 'Geist-style interactive lab' : 'zero-native page'} for **${topic}**.
+Temporary pi-gnosis ${kind === 'lab' ? 'Geist-style interactive lab' : 'zero-native page'} for **${topic}**.
 
 ## Modality
 
@@ -278,7 +278,7 @@ Open as a native zero-native surface:
 
 The launcher creates a local zero-native shell under \`native-shell/\`, copies this artifact's \`app.zon\` and frontend into it, builds the frontend, then runs \`zig build run\`. The generated native policy uses system WebView, no native permissions, denied external links, and only local app origins.
 
-This artifact is temporary. Promote learner-written notes through the Pi-GNOSIS note-export path if they should last.
+This artifact is temporary. Promote learner-written notes through the pi-gnosis note-export path if they should last.
 `;
   const run = `#!/usr/bin/env bash
 set -euo pipefail

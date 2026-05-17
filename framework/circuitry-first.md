@@ -1,6 +1,6 @@
 # Circuitry-first architecture
 
-Pi-GNOSIS treats Circuitry as the executable programming language for intelligent work.
+pi-gnosis treats Circuitry as the executable programming language for intelligent work.
 
 Do not compress the workflow into one giant Pi prompt. Use top-level Pi skill instructions only to decide when and how to launch the frozen graph programs. The graphs do the delegation.
 

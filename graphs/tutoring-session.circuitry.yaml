@@ -1,7 +1,7 @@
 circuitry: "0.2"
-title: "Pi-GNOSIS Tutoring Session Program"
+title: "pi-gnosis tutoring graph program"
 description: |
-  Frozen Circuitry program for one non-linear tutoring turn. It reads Obsidian notes and current session evidence, chooses an open-ended probe or explanation, appends notes when needed, and tells Pi whether to continue, pause, export notes, or switch modality.
+  Graph program for one adaptive tutoring turn. Runtime input carries learner request/context; config input carries durable memory settings.
 runtime:
   provider: pi
   model: inherit
@@ -13,120 +13,95 @@ validation:
     - rule: require-executable-inputs
       executableKinds: [agent, tool]
 resources:
-  session_context:
+  gnosis_config:
     type: text
-    label: "Session context"
-    value: |
-      topic: ""
-      learner_message: ""
-      note_path: "<configured obsidian root>"
-      profile_note: "<configured profile note>"
-      session_note: "<configured session note>"
-      preferred_mode: "pi decides"
-      apply_writes: false
-      user_may_quit_any_time: true
-  tutoring_policy:
+    label: "Resolved pi-gnosis config"
+    value: "{}"
+  session_request:
     type: text
-    label: "Tutoring policy"
-    value: |
-      This is non-linear. The learner may stop, resume, jump ahead, ask for a video, ask for notes, or change goals. Ask at most one modality or preference question when needed. Never use multiple-choice diagnostic probes. Use open-ended evidence to update the note-backed learner record. Use the configured notes root, profile note, and session note from the Pi-GNOSIS config snapshot.
-  note_policy:
+    label: "Runtime input"
+    value: "{}"
+  tutoring_contract:
     type: text
-    label: "Note policy"
+    label: "Tutoring contract"
     value: |
-      Maintain an explainable note-backed learner record. Store evidence records rather than opaque mastery labels. Concepts can have prerequisite, contrast, misconception, analogy, and transfer links in notes. Move on only when evidence supports it or when the user requests a different path.
-  note_reader:
+      Teach one useful next step. The learner may jump topics or change modality. Use open probes only: recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, or source-check. Never use multiple-choice diagnostics.
+  intake_station:
     type: agent
-    identity: "Obsidian Note Reader"
+    identity: "Tutoring Intake Station"
     model: inherit
-    inputs: [session_context, note_policy]
+    inputs: [session_request, tutoring_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      topic: str
+      learner_intent: str
+      desired_modality: str
+      immediate_need: str
+      memory_needed: bool
+      success_condition: str
+    instructions: |
+      Parse the runtime input into a precise tutoring job. Decide what a successful next turn must accomplish. Output only valid JSON matching expect.
+  memory_station:
+    type: agent
+    identity: "Learner Memory Station"
+    model: inherit
+    inputs: [intake_station, gnosis_config]
     skills: [pi-gnosis]
     tools: [read_file, grep]
     expect:
-      relevant_concepts:
+      relevant_memory:
         type: list
         items: str
-      evidence_found:
+      known_misconceptions:
         type: list
         items: str
-      uncertain_state:
+      useful_prior_examples:
         type: list
         items: str
-      recommended_focus: str
+      missing_memory:
+        type: list
+        items: str
     instructions: |
-      Read available Obsidian notes if paths exist. Summarize only evidence relevant to the current learner message. If no notes exist, report empty state. Output only valid JSON matching expect.
-  turn_intent_router:
+      Use gnosis_config to locate learner memory when memory is useful. If memory is not needed or unavailable, say so without blocking the turn. Do not write. Output only valid JSON matching expect.
+  move_station:
     type: agent
-    identity: "Turn Intent Router"
+    identity: "Teaching Move Station"
     model: inherit
-    inputs: [session_context, note_reader, tutoring_policy]
+    inputs: [intake_station, memory_station, tutoring_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      user_intent: str
-      should_teach_now: bool
-      should_probe_now: bool
-      should_offer_modality_choice: bool
-      should_pause_or_resume: str
-      recommended_graph_after_turn: str
+      response: str
+      visual_or_ascii: str
+      learner_probe: str
+      why_this_move: str
+      optional_next_modality: str
     instructions: |
-      Decide what Pi should do next: explain, probe, ask one modality question, resume from notes, export notes, create a Manim lecture, or pause. Do not force a linear curriculum. Output only valid JSON matching expect.
-  open_probe_designer:
+      Produce the actual learner-facing tutoring turn. Keep it focused, clear, and active. Include a small probe unless the learner requested a pure artifact handoff. Output only valid JSON matching expect.
+  memory_update_station:
     type: agent
-    identity: "Open Probe Designer"
+    identity: "Memory Update Station"
     model: inherit
-    inputs: [note_reader, turn_intent_router, tutoring_policy, note_policy]
+    inputs: [session_request, intake_station, move_station]
     skills: [pi-gnosis]
     tools: []
     expect:
-      probes:
-        type: list
-        items:
-          type: str
-          prompt: str
-          targeted_concepts:
-            type: list
-            items: str
-          rubric: str
-          answer_key_visibility: str
-      forbidden_formats_checked: bool
+      should_write: bool
+      proposed_note_update: str
+      reason: str
     instructions: |
-      If probing is appropriate, write short open-ended prompts only. Allowed types include recall, explain, transfer, contrast, debug, teach-back, source-check, and worked example. Recognition-only formats are forbidden. Output only valid JSON matching expect.
-  teaching_move_planner:
+      Decide whether this turn produced durable learner-memory information. Prepare a proposed note update only when the runtime input requests memory writing. Do not write. Output only valid JSON matching expect.
+  output_station:
     type: agent
-    identity: "Teaching Move Planner"
+    identity: "Tutoring Output Station"
     model: inherit
-    inputs: [note_reader, turn_intent_router, open_probe_designer, tutoring_policy]
+    inputs: [move_station, memory_update_station]
     skills: [pi-gnosis]
     tools: []
     expect:
-      next_pi_message: str
-      explanation_strategy: str
-      scaffold_level: str
-      what_not_to_reveal_yet:
-        type: list
-        items: str
-      user_exit_paths:
-        type: list
-        items: str
+      learner_response: str
+      memory_update_status: str
+      next_graph_hint: str
     instructions: |
-      Draft Pi's next conversational move. Keep it natural. If asking a probe, do not include the answer before the learner responds. If explaining, include a concrete example and ask for a short teach-back. Output only valid JSON matching expect.
-  state_update_writer:
-    type: agent
-    identity: "Learner Note Update Writer"
-    model: inherit
-    inputs: [note_reader, turn_intent_router, open_probe_designer, teaching_move_planner, note_policy]
-    skills: [pi-gnosis]
-    tools: []
-    expect:
-      note_patch:
-        type: dict
-      evidence_to_wait_for:
-        type: list
-        items: str
-      next_review_or_probe_targets:
-        type: list
-        items: str
-      output_manifest: dict
-    instructions: |
-      Produce a note patch to be saved by Pi if appropriate. Do not claim the learner knows a concept until evidence exists. Include what evidence to wait for after Pi sends the next message. Output only valid JSON matching expect.
+      Return the response Pi should say to the learner and any routing hint for video, notes, research, or interactive artifacts. Output only valid JSON matching expect.

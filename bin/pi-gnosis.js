@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { buildInteractiveArtifact, buildManimProject, buildReviewSchedule, getGraphProgram, listGraphPrograms, loadConfig, planCleanup, storagePlan, validateCircuitryFile } from '../src/index.js';
+import { buildInteractiveArtifact, buildManimProject, buildReviewSchedule, getGraphProgram, gnosisGraphRunArgs, listGraphPrograms, loadConfig, planCleanup, storagePlan, validateCircuitryFile } from '../src/index.js';
 
 function arg(name, fallback = undefined) {
   const prefix = `--${name}=`;
@@ -13,7 +13,7 @@ function arg(name, fallback = undefined) {
 }
 
 function usage() {
-  console.log(`pi-gnosis commands:\n  graphs\n  graph <name>\n  validate <file...>\n  storage-plan --topic <topic>\n  schedule <concept-scores.json> [--today YYYY-MM-DD]\n  manim-sample --topic <topic> --out <dir>\n  artifact-sample --topic <topic> [--kind page|lab] --out <dir>\n  cleanup-plan <path...> [--apply] [--allow-media]`);
+  console.log(`pi-gnosis commands:\n  graphs\n  graph <name>\n  run-args <name> [--input JSON]\n  validate <file...>\n  storage-plan --topic <topic>\n  schedule <concept-scores.json> [--today YYYY-MM-DD]\n  manim-sample --topic <topic> --out <dir>\n  artifact-sample --topic <topic> [--kind page|lab] --out <dir>\n  cleanup-plan <path...> [--apply] [--allow-media]`);
 }
 
 const cmd = process.argv[2];
@@ -25,6 +25,10 @@ try {
   } else if (cmd === 'graph') {
     const name = process.argv[3] || 'research';
     console.log(getGraphProgram(name));
+  } else if (cmd === 'run-args') {
+    const name = process.argv[3] || 'research';
+    const input = JSON.parse(arg('input', '{}'));
+    console.log(JSON.stringify(gnosisGraphRunArgs(name, input), null, 2));
   } else if (cmd === 'validate') {
     const files = process.argv.slice(3);
     if (files.length === 0) throw new Error('validate requires at least one file');

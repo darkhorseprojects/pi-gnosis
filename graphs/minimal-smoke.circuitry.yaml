@@ -1,6 +1,7 @@
 circuitry: "0.2"
-title: "Pi-GNOSIS Minimal Smoke Program"
-description: "Small Circuitry graph for validating provider, model inheritance, resource inputs, skill loading, and expected JSON output."
+title: "pi-gnosis smoke graph program"
+description: |
+  Graph program for checking runtime input delivery and pi-gnosis graph execution.
 runtime:
   provider: pi
   model: inherit
@@ -12,21 +13,39 @@ validation:
     - rule: require-executable-inputs
       executableKinds: [agent, tool]
 resources:
+  gnosis_config:
+    type: text
+    label: "Resolved pi-gnosis config"
+    value: "{}"
   smoke_request:
     type: text
-    value: |
-      Verify pi-gnosis graph wiring. Do not browse. Do not write files.
-  smoke_agent:
+    label: "Runtime input"
+    value: "{}"
+  smoke_intake:
     type: agent
-    identity: "Pi-GNOSIS Smoke Agent"
+    identity: "Smoke Intake Station"
     model: inherit
-    inputs: [smoke_request]
+    inputs: [smoke_request, gnosis_config]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      request_received: bool
+      config_received: bool
+      execution_notes:
+        type: list
+        items: str
+    instructions: |
+      Read the runtime input and resolved config input. Confirm graph-program execution plumbing. Output only valid JSON matching expect.
+  smoke_report:
+    type: agent
+    identity: "Smoke Report Station"
+    model: inherit
+    inputs: [smoke_intake]
     skills: [pi-gnosis]
     tools: []
     expect:
       status: str
-      provider: str
-      model: str
-      note: str
+      message: str
+      next_step: str
     instructions: |
-      Return a tiny JSON object confirming that this graph uses provider pi and model inherit. Output only valid JSON matching expect.
+      Convert the intake result into a terse final smoke report. Output only valid JSON matching expect.

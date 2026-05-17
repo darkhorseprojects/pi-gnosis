@@ -5,7 +5,7 @@
   "kind": "pi-package",
   "description": "Circuitry-first Pi package that turns research and tutoring plans into executable Circuitry graph programs.",
   "dependsOn": {
-    "pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.21",
+    "pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.23",
     "circuitry": "transitive through pi-circuitry",
     "pi-web-access": "npm:pi-web-access@^0.10.7",
     "zero-native": "npm:zero-native@^0.2.0",

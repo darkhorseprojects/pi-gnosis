@@ -1,10 +1,10 @@
-# Research foundations used by Pi-GNOSIS
+# Research foundations used by pi-gnosis
 
 This file is a design grounding memo, not a frozen bibliography.
 
 ## Automated research pipelines
 
-Automated research/survey systems work better when they decompose the job. Agentic AutoSurvey uses specialized agents for paper search, topic mining/clustering, survey writing, and quality evaluation, reporting higher synthesis quality than a single baseline survey generator. Design implication: Pi-GNOSIS uses separate Circuitry agents for scope, source discovery, extraction, synthesis, critique, and learner artifact routing.
+Automated research/survey systems work better when they decompose the job. Agentic AutoSurvey uses specialized agents for paper search, topic mining/clustering, survey writing, and quality evaluation, reporting higher synthesis quality than a single baseline survey generator. Design implication: pi-gnosis uses separate Circuitry agents for scope, source discovery, extraction, synthesis, critique, and learner artifact routing.
 
 Citation integrity remains a hard failure mode. Generated reviews can look polished while missing disagreement, hallucinating references, or failing to connect claims to sources. Design implication: every non-obvious claim should map to source ids, and quality gates should reject unsupported synthesis.
 
@@ -14,17 +14,17 @@ Agentic RAG and multi-agent RAG research motivate decomposing retrieval-heavy ta
 
 ## Intelligent tutoring and note-backed memory
 
-Intelligent tutoring systems traditionally maintain a learner model and use interactions to update the estimate of what the learner understands. Knowledge tracing estimates learner knowledge from interactions, but modern reviews warn that high predictive accuracy and interpretability do not always coexist. Design implication: Pi-GNOSIS keeps the durable record in Obsidian notes instead of an opaque mastery store.
+Intelligent tutoring systems traditionally maintain a learner model and use interactions to update the estimate of what the learner understands. Knowledge tracing estimates learner knowledge from interactions, but modern reviews warn that high predictive accuracy and interpretability do not always coexist. Design implication: pi-gnosis keeps the durable record in Obsidian notes instead of an opaque mastery store.
 
-LLM tutoring papers warn that being good at solving problems is not the same as being good at tutoring. Design implication: Pi-GNOSIS separates subject research, note writing, probing, feedback, and next-turn planning.
+LLM tutoring papers warn that being good at solving problems is not the same as being good at tutoring. Design implication: pi-gnosis separates subject research, note writing, probing, feedback, and next-turn planning.
 
 ## Open-ended probing
 
-Open-ended questions reveal reasoning better than recognition-only formats. LLM-based short-answer grading work suggests open-ended formative assessment is increasingly practical, although not perfect. Design implication: Pi-GNOSIS forbids multiple-choice diagnostic probes and instead uses recall, explain, transfer, contrast, debug, teach-back, and source-check prompts.
+Open-ended questions reveal reasoning better than recognition-only formats. LLM-based short-answer grading work suggests open-ended formative assessment is increasingly practical, although not perfect. Design implication: pi-gnosis forbids multiple-choice diagnostic probes and instead uses recall, explain, transfer, contrast, debug, teach-back, and source-check prompts.
 
 ## Retrieval practice and spacing
 
-Retrieval practice and spaced review are more durable than passive rereading for many learning tasks. More effortful retrieval often produces better long-term memory than easy recognition. Design implication: Pi-GNOSIS produces review schedules and open-ended retrieval prompts for concepts with high decay or misconception risk.
+Retrieval practice and spaced review are more durable than passive rereading for many learning tasks. More effortful retrieval often produces better long-term memory than easy recognition. Design implication: pi-gnosis produces review schedules and open-ended retrieval prompts for concepts with high decay or misconception risk.
 
 ## Memetics, cautiously
 

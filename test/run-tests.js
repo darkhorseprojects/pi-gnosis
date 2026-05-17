@@ -9,6 +9,7 @@ import {
   buildManimProject,
   buildReviewSchedule,
   getGraphProgram,
+  gnosisGraphRunArgs,
   isForbiddenProbe,
   listGraphPrograms,
   loadConfig,
@@ -24,8 +25,15 @@ assert.equal(config.runtime.model, 'inherit');
 for (const name of listGraphPrograms()) {
   const text = getGraphProgram(name);
   assert.match(text, /runtime:\n\s+provider: pi\n\s+model: inherit/);
+  assert.match(text, /gnosis_config:/);
   assert.doesNotMatch(text, /Generic Simulation Node|Simulation Orchestrator/);
 }
+
+const manimArgs = gnosisGraphRunArgs('manim-lecture', { topic: 'Linear algebra', apply_writes: true }, { config });
+assert.match(manimArgs.filename, /manim-lecture\.circuitry\.yaml$/);
+assert.deepEqual(manimArgs.inputs.lecture_request, { topic: 'Linear algebra', apply_writes: true });
+assert.equal(manimArgs.inputs.gnosis_config.runtime.provider, 'pi');
+assert.throws(() => gnosisGraphRunArgs('unknown', {}), /Unknown graph name/);
 
 for (const file of [
   'graphs/research.circuitry.yaml',
@@ -92,4 +100,4 @@ assert.equal(pageArtifact.learningSpec.designSystem, 'pi-gnosis-page');
 const graphsOutput = execFileSync('node', ['bin/pi-gnosis.js', 'graphs'], { encoding: 'utf8' });
 assert.match(graphsOutput, /research/);
 
-console.log('All Pi-GNOSIS tests passed.');
+console.log('All pi-gnosis tests passed.');

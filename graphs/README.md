@@ -1,6 +1,33 @@
-# Pi-GNOSIS Circuitry graphs
+# pi-gnosis Circuitry graph programs
 
-These graphs are frozen programs for pi-circuitry. Do not treat them as examples only. Pi should run them when the skill routes work here.
+These files are saved Circuitry graph programs. Pi dispatches learner requests to the right graph, passes runtime inputs, runs the graph, reads the result, and reports it.
+
+Do not edit graph YAML for each learner request. Runtime inputs are the graph args.
+
+Execution shape:
+
+```txt
+graph file/current canvas/text + runtime inputs -> run result
+```
+
+Every graph declares text resources for runtime inputs. The pi-gnosis runner maps graph names to request resources and may pass resolved config through `gnosis_config` when declared.
+
+```json
+{
+  "filename": "graphs/manim-lecture.circuitry.yaml",
+  "inputs": {
+    "lecture_request": {
+      "topic": "linear algebra",
+      "scope": "full intro",
+      "render": "draft-if-environment-ready",
+      "apply_writes": true
+    },
+    "gnosis_config": {
+      "paths": {}
+    }
+  }
+}
+```
 
 Every graph uses:
 
@@ -12,12 +39,12 @@ runtime:
 
 Every agent node also uses `model: inherit`.
 
-The graph itself is the multi-actor workflow. Do not add a single generic simulation node.
+## Graphs
 
-## Modality routing
-
-- Text, ASCII, and markdown remain in the Pi conversation.
-- Video/lecture work routes to `manim-lecture.circuitry.yaml`.
-- Temporary pages and Geist-style widgets/labs route to `interactive-artifact.circuitry.yaml` and are cleanup-safe by default.
-- Durable learner notes route to `note-export.circuitry.yaml`.
-- Config-fed roots are the rule; file paths in graph resources are defaults/examples unless the Pi-GNOSIS config says otherwise.
+- Conversation tutoring: `tutoring-session.circuitry.yaml`
+- Source-grounded research: `research.circuitry.yaml`
+- Durable Obsidian notes: `note-export.circuitry.yaml`
+- Manim lecture/video artifacts: `manim-lecture.circuitry.yaml`
+- Temporary pages/widgets/labs: `interactive-artifact.circuitry.yaml`
+- Temporary artifact cleanup: `cleanup.circuitry.yaml`
+- Runtime smoke check: `minimal-smoke.circuitry.yaml`

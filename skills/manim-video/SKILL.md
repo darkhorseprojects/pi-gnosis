@@ -1,7 +1,7 @@
 ---
 name: manim-video
 description: >-
-  Local Manim CE lecture/video generation skill for Pi-GNOSIS. Use when a Circuitry
+  Local Manim CE lecture/video generation skill for pi-gnosis. Use when a Circuitry
   graph or Pi user requests animated explanations, mathematical or technical
   visualizations, algorithm walkthroughs, architecture diagrams, paper explainers,
   or a 3Blue1Brown-style lecture output. Inspired by the public Nous/Hermes Manim
@@ -11,7 +11,7 @@ model: inherit
 
 # Manim Video Production
 
-Credit: this local skill is inspired by Nous Research / Hermes Agent's public Manim Video documentation. It is rewritten for Pi-GNOSIS and bundled locally because there is no official Pi dependency to require.
+Credit: this local skill is inspired by Nous Research / Hermes Agent's public Manim Video documentation. It is rewritten for pi-gnosis and bundled locally because there is no official Pi dependency to require.
 
 ## Use
 

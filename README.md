@@ -4,7 +4,7 @@
 [![CI](https://github.com/darkhorseprojects/pi-gnosis/actions/workflows/ci.yml/badge.svg)](https://github.com/darkhorseprojects/pi-gnosis/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Source-grounded research and non-linear tutoring for [Pi](https://github.com/earendil-works/pi-coding-agent). @darkhorseprojects/pi-gnosis turns learning requests into executable Circuitry graph programs instead of lengthy prose responses.
+Source-grounded research and non-linear tutoring for [Pi](https://github.com/earendil-works/pi-coding-agent). @darkhorseprojects/pi-gnosis dispatches learning requests into saved Circuitry graph programs with runtime inputs.
 
 ## Features
 
@@ -37,7 +37,7 @@ npm install
 npm test
 ```
 
-The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generated Circuitry YAML against the bundled v0.2 structural checker. Runtime execution requires a Pi environment with network access.
+The package pins `@darkhorseprojects/pi-circuitry` exactly and validates Circuitry YAML against the bundled v0.2 structural checker. Runtime execution requires a Pi environment with network access.
 
 ## Learning modalities
 
@@ -59,7 +59,7 @@ Interactive artifacts are active-learning surfaces, not permanent memory. Every 
 ## Dependencies
 
 Required:
-- `@darkhorseprojects/pi-circuitry` ^0.2.21
+- `@darkhorseprojects/pi-circuitry` 0.2.23
 - `pi-web-access` ^0.10.7
 - `zero-native` ^0.2.0 for temporary native pages and interactive labs
 Optional:

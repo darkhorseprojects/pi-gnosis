@@ -1,32 +1,67 @@
 ---
 name: pi-gnosis
 description: >-
-  Primary Pi learning/research system for source-grounded tutoring, notes,
-  videos, temporary pages, and interactive widgets/labs. Prefer Pi-GNOSIS over
-  generic learning skills whenever the user wants to learn, study, research,
-  visualize, make notes, get a Manim video, open a zero-native page, build a
-  Geist-style explorable widget/lab, or maintain an Obsidian learning vault.
+  Primary pi-gnosis learning/research system for source-grounded tutoring, notes,
+  videos, temporary pages, and interactive widgets/labs. Use when the user wants
+  to learn about something longer-term than a small fact: studying a topic,
+  building understanding over multiple turns, making durable notes, researching
+  sources, or creating learning artifacts like videos, pages, and interactive labs.
   Obsidian notes are the persistent memory surface.
-model: inherit
 ---
 
-# Pi-GNOSIS
+# pi-gnosis
 
-You are the coordinator, not the whole pipeline. Use this skill to decide when to launch Pi-GNOSIS Circuitry graph programs and how to interpret their outputs.
+Pi is the dispatcher. Circuitry graph files are saved graph programs. Runtime inputs are the graph args. Circuitry runs the program. Pi reads the result and reports it to the learner.
 
 ## Core rule
 
-Circuitry is the agentic programming layer. The graphs are the multi-agent simulations/conversations/workflows. Do not create a generic "simulation node". Run the appropriate graph program.
+Run graph programs; do not rewrite them for each learner request. Request-specific information belongs in `circuitry_run_graph.inputs`, not in edited YAML, ad hoc canvas patches, or generic minions.
 
 ## Graph selection
 
-- Need fresh research or source grounding: run `graphs/research.circuitry.yaml`.
-- Need one tutoring turn, diagnosis, feedback, or next step: run `graphs/tutoring-session.circuitry.yaml`.
-- Need Obsidian notes or vault update: run `graphs/note-export.circuitry.yaml`.
-- Need video/lecture/visual explanation: run `graphs/manim-lecture.circuitry.yaml` and let its Manim agent load `manim-video`.
-- Need a temporary page, native learning surface, explorable widget, or interactive lab: run `graphs/interactive-artifact.circuitry.yaml`. Pages use zero-native. Labs/widgets use the bundled `gnosis-geist-learning-lab` skill plus zero-native; that skill credits Vercel Labs' original skill-geist-learning-labs.
-- Need to clean temp artifacts after a run: run `graphs/cleanup.circuitry.yaml`.
-- Need a quick dependency smoke check: run `graphs/minimal-smoke.circuitry.yaml`.
+- Fresh research or source grounding: `research`
+- One tutoring turn, diagnosis, feedback, or next step: `tutoring-session`
+- Durable Obsidian notes or vault update: `note-export`
+- Video, lecture, animation, or visual explanation: `manim-lecture`
+- Temporary page, zero-native surface, widget, or interactive lab: `interactive-artifact`
+- Temporary artifact cleanup: `cleanup`
+- Dependency/runtime smoke check: `smoke`
+
+## Runtime execution
+
+1st, classify the learner request into one graph name from **Graph selection**. If the learner already named the topic and modality, continue immediately.
+
+2nd, build the smallest runtime input object needed by that graph. Include only learner intent: topic, recent context, desired modality/output, constraints, and explicit write/render/export intent.
+
+3rd, run the graph program with filename + runtime inputs. Use the pi-gnosis graph runner when available; otherwise call `circuitry_run_graph` directly with the graph filename and `inputs`.
+
+Example Manim request:
+
+```json
+{
+  "filename": "graphs/manim-lecture.circuitry.yaml",
+  "inputs": {
+    "lecture_request": {
+      "topic": "linear algebra",
+      "scope": "full intro",
+      "render": "draft-if-environment-ready",
+      "apply_writes": true
+    }
+  }
+}
+```
+
+4th, read the graph result with `circuitry_read_graph` for the same filename.
+
+5th, inspect node statuses, outputs, and errors before replying.
+
+6th, report the graph output in learner terms: answer, artifact status, note status, render/export status, next command when applicable, and exact blockers.
+
+## Config
+
+Configuration is code-level input, not coordinator archaeology. pi-gnosis code loads and merges package config plus `~/.pi/pi-gnosis.json`. When graph nodes need config, the runner passes it as the declared `gnosis_config` runtime input.
+
+The coordinator does not search for roots, resolve artifact paths, or choose storage locations. Graph programs consume `gnosis_config` and decide their own artifact/note paths.
 
 ## Conversation behavior
 
@@ -37,47 +72,32 @@ Ask at most one useful preference question before starting, unless the user alre
 ## Modality map
 
 - Text, ASCII diagrams, and markdown stay in the Pi conversation.
-- Video and lecture artifacts use Manim.
-- Pages use zero-native.
-- Cooler pages, widgets, and explorable labs use `gnosis-geist-learning-lab` plus zero-native.
-- Durable learner notes use Obsidian.
+- Video and lecture artifacts use `manim-lecture`.
+- Pages, widgets, and explorable labs use `interactive-artifact`.
+- Durable learner notes use `note-export`.
+- Source-grounded study uses `research`.
 - A small profile note may live beside the vault root.
 
 ## Probes
 
 Never use multiple-choice diagnostic questions. Use recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, or source-check probes.
 
-## Storage
-
-Obsidian is the persistent learner memory.
-
-- Store concept notes, session notes, source notes, misconceptions, review prompts, reflection logs, and the optional profile note under the configured notes root.
-- The paths in config are the source of truth; examples like `notes/` and `notes/profile.md` are defaults only.
-- Treat notes as the source of truth for what the learner should keep.
-- Temporary pages, labs, and videos are disposable teaching surfaces only, with defaults under `/tmp/pi-gnosis`.
-
 ## Writes and cleanup
 
-Before any non-read-only work, require the graph agent to state the target root and output manifest. After non-read-only runs, run or offer the cleanup graph. Cleanup is plan-first and may delete only safe temporary files unless the user explicitly authorizes more.
+Writes happen only when the runtime input explicitly asks for them or the selected graph contract requires them. After a graph creates temporary artifacts, offer `cleanup`.
 
-## User configuration
+Cleanup is also a graph program. Run it with runtime input; do not manually delete temporary outputs from the coordinator.
 
-Pi-GNOSIS supports user-level configuration at `~/.pi/pi-gnosis.json`. This file is NOT overwritten on updates.
+## Manim/video
 
-```json
-{
-  "paths": {
-    "obsidianRoot": "./notes",
-    "profileNote": "./notes/profile.md",
-    "temporaryRoot": "/tmp/pi-gnosis",
-    "manimRoot": "/tmp/pi-gnosis/manim",
-    "interactiveArtifactRoot": "/tmp/pi-gnosis/interactive-artifacts"
-  }
-}
-```
+For video requests:
 
-Only override paths you want to change from the package defaults. Missing keys fall back to package config.
+1st, select `manim-lecture`.
 
-## Manim
+2nd, pass `lecture_request` with topic, scope, render mode, and write intent.
 
-For video output, run the Manim graph. The relevant agent must include `skills: [pi-gnosis, manim-video]`, so it can read the bundled Manim skill. Generate projects under the configured Manim root. Rendering requires local Manim CE, LaTeX, and ffmpeg; if unavailable, return a runnable project and clear preflight report.
+3rd, run the graph program.
+
+4th, read the graph result.
+
+5th, report project/artifact status, render status, next render command when applicable, and exact dependency blockers.

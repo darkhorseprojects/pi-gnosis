@@ -1,7 +1,7 @@
 circuitry: "0.2"
-title: "Pi-GNOSIS Cleanup Program"
+title: "pi-gnosis cleanup graph program"
 description: |
-  Frozen Circuitry program for planning and, when explicitly allowed, applying safe cleanup of non-permanent artifacts created by Pi-GNOSIS graph runs.
+  Graph program for cleanup-safe temporary artifact review. Runtime input carries cleanup intent; config input carries temporary artifact roots.
 runtime:
   provider: pi
   model: inherit
@@ -13,81 +13,89 @@ validation:
     - rule: require-executable-inputs
       executableKinds: [agent, tool]
 resources:
+  gnosis_config:
+    type: text
+    label: "Resolved pi-gnosis config"
+    value: "{}"
   cleanup_request:
     type: text
-    label: "Cleanup request"
-    value: |
-      run_id: ""
-      temp_path: "/tmp/pi-gnosis"
-      manim_root: "/tmp/pi-gnosis/manim"
-      apply_cleanup: false
-      allow_generated_media_cleanup: false
-  cleanup_policy:
+    label: "Runtime input"
+    value: "{}"
+  cleanup_contract:
     type: text
-    label: "Cleanup policy"
+    label: "Cleanup contract"
     value: |
-      Default is plan-only. Safe deletion is restricted to temporary files under /tmp/pi-gnosis. Generated Manim media may be proposed for cleanup, but only deleted if allow_generated_media_cleanup is true. Never delete notes, final videos, scripts, configs, or user-authored files.
-  artifact_census:
+      Cleanup is plan-first. Delete only temporary pi-gnosis artifacts that are safe by manifest, location, and explicit request. Never delete learner notes, source material, or promoted artifacts.
+  intake_station:
     type: agent
-    identity: "Artifact Census Agent"
+    identity: "Cleanup Intake Station"
     model: inherit
-    inputs: [cleanup_request, cleanup_policy]
-    skills: [pi-gnosis]
-    tools: [read_file, grep, shell]
-    expect:
-      discovered_artifacts:
-        type: list
-        items:
-          path: str
-          category: str
-          source: str
-      protected_artifacts:
-        type: list
-        items: str
-      uncertainty:
-        type: list
-        items: str
-    instructions: |
-      Inspect manifests and safe roots if tools are available. Do not delete. Classify temporary, generated-media, final-output, state, note, source, config, or unknown. Unknown is protected. Output only valid JSON matching expect.
-  cleanup_decider:
-    type: agent
-    identity: "Cleanup Decision Agent"
-    model: inherit
-    inputs: [artifact_census, cleanup_policy, cleanup_request]
+    inputs: [cleanup_request, cleanup_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      deletion_plan:
+      artifact_hint: str
+      deletes_requested: bool
+      safety_boundary: str
+      success_condition: str
+    instructions: |
+      Parse cleanup intent and define the safety boundary. Output only valid JSON matching expect.
+  census_station:
+    type: agent
+    identity: "Artifact Census Station"
+    model: inherit
+    inputs: [intake_station, gnosis_config]
+    skills: [pi-gnosis]
+    tools: [read_file, grep, shell]
+    expect:
+      candidate_artifacts:
         type: list
-        items:
-          path: str
-          reason: str
-          allowed_now: bool
-      keep_plan:
+        items: str
+      protected_artifacts:
         type: list
-        items:
-          path: str
-          reason: str
-      needs_user_confirmation:
+        items: str
+      missing_manifests:
         type: list
         items: str
     instructions: |
-      Decide what can be deleted. Only temporary files under /tmp/pi-gnosis are allowed when apply_cleanup is true. Media cache cleanup needs allow_generated_media_cleanup. Everything else is keep/protected. Output only valid JSON matching expect.
-  cleanup_executor:
+      Use gnosis_config to inventory candidate cleanup targets and protected outputs. Do not delete. Output only valid JSON matching expect.
+  decision_station:
     type: agent
-    identity: "Safe Cleanup Executor"
+    identity: "Cleanup Decision Station"
     model: inherit
-    inputs: [cleanup_decider, cleanup_policy, cleanup_request]
+    inputs: [intake_station, census_station, cleanup_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      safe_to_delete:
+        type: list
+        items: str
+      keep:
+        type: list
+        items: str
+      blocked:
+        type: list
+        items: str
+      explanation: str
+    instructions: |
+      Classify cleanup candidates. Require manifest/location confidence and explicit delete intent before deletion is allowed. Output only valid JSON matching expect.
+  executor_station:
+    type: agent
+    identity: "Cleanup Executor Station"
+    model: inherit
+    inputs: [cleanup_request, decision_station, cleanup_contract]
     skills: [pi-gnosis]
     tools: [shell]
     expect:
-      status: str
       deleted:
         type: list
         items: str
-      not_deleted:
+      planned_only:
         type: list
         items: str
-      audit_log: str
+      skipped:
+        type: list
+        items: str
+      final_message: str
     instructions: |
-      If apply_cleanup is false, do not delete anything; return plan-only status. If true, delete only paths that cleanup_decider marked allowed_now and that are inside safe temporary roots. Use conservative commands. Never use recursive deletion outside safe roots. Output only valid JSON matching expect.
+      If apply_deletes is true, delete only paths listed as safe_to_delete. Otherwise return a cleanup plan only. Output only valid JSON matching expect.

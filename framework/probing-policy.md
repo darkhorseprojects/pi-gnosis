@@ -1,6 +1,6 @@
 # Probing policy
 
-Pi-GNOSIS does not use multiple-choice questions for diagnostic probing.
+pi-gnosis does not use multiple-choice questions for diagnostic probing.
 
 Allowed probe types:
 

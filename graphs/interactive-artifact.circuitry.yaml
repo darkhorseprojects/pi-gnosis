@@ -1,7 +1,7 @@
 circuitry: "0.2"
-title: "Pi-GNOSIS Interactive Artifact Program"
+title: "pi-gnosis interactive artifact graph program"
 description: |
-  Frozen Circuitry program for creating temporary learning pages and Geist-style interactive labs. Text, ASCII, and markdown remain in the Pi conversation; video goes to Manim; pages use zero-native; richer widgets/labs use Geist learning patterns on a zero-native surface.
+  Graph program for temporary learning pages, widgets, and Geist-style interactive labs. Runtime input carries the artifact request; config input carries artifact storage settings.
 runtime:
   provider: pi
   model: inherit
@@ -13,87 +13,80 @@ validation:
     - rule: require-executable-inputs
       executableKinds: [agent, tool]
 resources:
+  gnosis_config:
+    type: text
+    label: "Resolved pi-gnosis config"
+    value: "{}"
   artifact_request:
     type: text
-    label: "Interactive artifact request"
-    value: |
-      topic: ""
-      kind: "lab"
-      output_root: "/tmp/pi-gnosis/interactive-artifacts"
-      open_immediately: true
-      apply_writes: false
-  modality_policy:
+    label: "Runtime input"
+    value: "{}"
+  artifact_contract:
     type: text
-    label: "Pi-GNOSIS modality policy"
+    label: "Artifact contract"
     value: |
-      Text, ASCII diagrams, and markdown stay in the Pi conversation. Video and lecture artifacts use the Manim graph. Temporary pages use zero-native. Cooler pages, widgets, and explorable labs use Geist learning patterns plus zero-native. Durable learner notes are exported through the note-export graph, not stored inside temporary artifacts.
-  artifact_policy:
-    type: text
-    label: "Temporary artifact policy"
-    value: |
-      Write only under output_root. Produce an artifact_manifest.json before any other write. Artifacts are temporary unless the learner explicitly promotes notes or outputs. No passive-only pages: every page/lab must include orient, attempt, feedback, explanation, checkpoint, and reflection. Do not grant native permissions or broad navigation origins.
-  artifact_intent_router:
+      Temporary artifacts teach by interaction. Every lab/page needs orient, attempt, feedback, explanation, checkpoint, and reflection. Pages use zero-native. Rich labs use gnosis-geist-learning-lab patterns.
+  intake_station:
     type: agent
-    identity: "Pi-GNOSIS Artifact Intent Router"
+    identity: "Artifact Intake Station"
     model: inherit
-    inputs: [artifact_request, modality_policy]
+    inputs: [artifact_request, artifact_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      selected_modality: str
-      reason: str
-      route_to_graph: str
+      topic: str
       artifact_kind: str
-      should_stay_in_conversation: bool
+      learner_goal: str
+      write_requested: bool
+      open_requested: bool
+      success_condition: str
     instructions: |
-      Choose the correct Pi-GNOSIS modality. If text, ASCII, or markdown is sufficient, keep it in the conversation. If video or temporal animation is needed, route to manim-lecture. If an interactive or native surface helps, select page or lab here. Output only valid JSON matching expect.
-  learning_loop_designer:
+      Parse the runtime input into a concrete temporary learning artifact job. Output only valid JSON matching expect.
+  learning_loop_station:
     type: agent
-    identity: "Learning Loop Designer"
+    identity: "Learning Loop Station"
     model: inherit
-    inputs: [artifact_request, artifact_intent_router, artifact_policy]
-    skills: [pi-gnosis]
+    inputs: [intake_station, artifact_contract]
+    skills: [pi-gnosis, gnosis-geist-learning-lab]
     tools: []
     expect:
       learning_objective: str
       orient: str
-      attempt_prompt: str
+      attempt: str
       feedback_rule: str
-      explanation_anchor: str
-      checkpoint_prompt: str
-      reflection_prompt: str
+      explanation: str
+      checkpoint: str
+      reflection: str
       misconception_to_surface: str
     instructions: |
-      Design the smallest useful active learning loop. The learner must attempt before explanation. Feedback must be specific. Avoid multiple-choice diagnostic probes. Output only valid JSON matching expect.
-  surface_planner:
+      Design the smallest active learning loop. The learner should attempt before explanation. Avoid multiple-choice diagnostics. Output only valid JSON matching expect.
+  surface_station:
     type: agent
-    identity: "Zero-Native Surface Planner"
+    identity: "Surface Design Station"
     model: inherit
-    inputs: [artifact_request, learning_loop_designer, modality_policy]
+    inputs: [intake_station, learning_loop_station, artifact_contract]
     skills: [pi-gnosis, gnosis-geist-learning-lab]
     tools: []
     expect:
-      engine: str
+      surface_type: str
       design_system: str
-      credited_skill: str
       components:
         type: list
         items: str
-      url_state:
+      interaction_state:
         type: list
         items: str
-      native_policy:
-        type: dict
+      native_policy: str
       files_to_create:
         type: list
         items: str
     instructions: |
-      Plan a zero-native page. For kind=lab, use the bundled gnosis-geist-learning-lab skill and select patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. Set credited_skill to gnosis-geist-learning-lab for lab/widget artifacts. Keep native policy strict: system WebView, no bridge unless explicitly required, no external navigation. Output only valid JSON matching expect.
-  artifact_writer:
+      Plan the zero-native surface. For labs/widgets, use gnosis-geist-learning-lab patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. Output only valid JSON matching expect.
+  writer_station:
     type: agent
-    identity: "Interactive Artifact Writer"
+    identity: "Artifact Writer Station"
     model: inherit
-    inputs: [artifact_request, artifact_policy, learning_loop_designer, surface_planner]
+    inputs: [artifact_request, gnosis_config, intake_station, learning_loop_station, surface_station, artifact_contract]
     skills: [pi-gnosis]
     tools: [read_file, write_file, edit_file, shell]
     expect:
@@ -108,24 +101,21 @@ resources:
         type: list
         items: str
     instructions: |
-      If apply_writes is false, return planned file contents and commands. If writes are enabled by Pi, write only under output_root and write artifact_manifest.json first. Create a runnable temporary artifact with learning_spec.json, page_spec.json, app.zon, frontend files, README.md, and run.sh. Output only valid JSON matching expect.
-  artifact_quality_gate:
+      Use gnosis_config to choose an artifact root. If apply_writes is true, write a runnable temporary artifact and its manifest before other files. If apply_writes is false, return planned contents and commands. Output only valid JSON matching expect.
+  quality_station:
     type: agent
-    identity: "Interactive Artifact Quality Gate"
+    identity: "Artifact Quality Station"
     model: inherit
-    inputs: [artifact_request, artifact_policy, learning_loop_designer, surface_planner, artifact_writer]
+    inputs: [learning_loop_station, surface_station, writer_station, artifact_contract]
     skills: [pi-gnosis]
     tools: [read_file]
     expect:
       status: str
       active_learning_loop_present: bool
       native_policy_ok: bool
-      temporary_storage_ok: bool
-      passive_page_risks:
+      artifact_manifest:
         type: list
         items: str
-      cleanup_manifest:
-        type: list
-        items: str
+      final_message: str
     instructions: |
-      Reject artifacts that are passive reading, write outside output_root, omit manifest-first behavior, or use loose native permissions. Confirm that page/lab artifacts follow the modality map. Output only valid JSON matching expect.
+      Verify that the output is an active temporary learning artifact, not a passive page. Check artifact status and opening instructions. Output only valid JSON matching expect.

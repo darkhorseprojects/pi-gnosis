@@ -1,7 +1,7 @@
 circuitry: "0.2"
-title: "Pi-GNOSIS Obsidian Export Program"
+title: "pi-gnosis note export graph program"
 description: |
-  Frozen Circuitry program that turns the learner's existing notes and current session context into learner-facing Obsidian-compatible notes under a safe notes root.
+  Graph program for durable Obsidian learner notes. Runtime input carries note intent/content; config input carries note storage settings.
 runtime:
   provider: pi
   model: inherit
@@ -13,105 +13,105 @@ validation:
     - rule: require-executable-inputs
       executableKinds: [agent, tool]
 resources:
+  gnosis_config:
+    type: text
+    label: "Resolved pi-gnosis config"
+    value: "{}"
   export_request:
     type: text
-    label: "Note export request"
-    value: |
-      topic: ""
-      notes_root: "<configured obsidian root>"
-      profile_note: "<configured profile note>"
-      note_path: "<configured obsidian root>"
-      apply_writes: false
-      overwrite_policy: "preserve-user-edits"
-  obsidian_contract:
+    label: "Runtime input"
+    value: "{}"
+  note_contract:
     type: text
-    label: "Obsidian contract"
+    label: "Note contract"
     value: |
-      Obsidian is learner-facing memory and the source of truth for durable study material. Export 00-map.md, profile.md, source-ledger.md, concepts/*.md, misconceptions.md, probes.md, review-plan.md, reflection-log.md, sessions/*.md, and manifest.md. Preserve user edits where possible. Link concepts, sources, probes, and session notes. Use the configured notes root and profile note from the Pi-GNOSIS config snapshot.
-  write_policy:
-    type: text
-    label: "Write policy"
-    value: |
-      Manifest first. Write only under the configured note_path. Do not delete notes. Do not overwrite user-authored sections unless explicitly asked. Mark generated sections with stable headers so future runs can update them safely.
-  note_state_reader:
+      Obsidian is durable learner memory. Notes should be compact, useful for later recall, and linked to sources when sources exist. Avoid dumping transcripts.
+  intake_station:
     type: agent
-    identity: "Obsidian Note Reader"
+    identity: "Note Intake Station"
     model: inherit
-    inputs: [export_request, obsidian_contract]
-    skills: [pi-gnosis]
-    tools: [read_file, grep]
-    expect:
-      imported_note_summary: str
-      source_ledger_available: bool
-      concept_notes_available: bool
-      session_notes_available: bool
-      missing_inputs:
-        type: list
-        items: str
-    instructions: |
-      Read the requested notes only. Summarize available note sections and missing inputs. Do not write. Output only valid JSON matching expect.
-  note_plan_builder:
-    type: agent
-    identity: "Obsidian Note Plan Builder"
-    model: inherit
-    inputs: [note_state_reader, obsidian_contract, write_policy]
+    inputs: [export_request, note_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      files_to_create_or_update:
-        type: list
-        items:
-          path: str
-          purpose: str
-          update_policy: str
-      generated_section_ids:
+      topic: str
+      note_kind: str
+      content_units:
         type: list
         items: str
-      user_edit_risks:
+      write_requested: bool
+      success_condition: str
+    instructions: |
+      Parse the runtime input into durable note units. Output only valid JSON matching expect.
+  state_station:
+    type: agent
+    identity: "Existing Note State Station"
+    model: inherit
+    inputs: [intake_station, gnosis_config]
+    skills: [pi-gnosis]
+    tools: [read_file, grep]
+    expect:
+      existing_notes:
+        type: list
+        items: str
+      merge_targets:
+        type: list
+        items: str
+      conflicts:
         type: list
         items: str
     instructions: |
-      Build a manifest-first note plan. Use the Obsidian contract. Make clear which sections are generated and which are preserved. Output only valid JSON matching expect.
-  note_writer:
+      Use gnosis_config to inspect relevant existing notes. Do not write. Output only valid JSON matching expect.
+  plan_station:
     type: agent
-    identity: "Obsidian Note Writer"
+    identity: "Note Plan Station"
     model: inherit
-    inputs: [note_plan_builder, note_state_reader, obsidian_contract, write_policy]
+    inputs: [intake_station, state_station, note_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      note_actions:
+        type: list
+        items: str
+      target_notes:
+        type: list
+        items: str
+      planned_content: str
+      risk_notes:
+        type: list
+        items: str
+    instructions: |
+      Plan the smallest correct note changes: create, merge, or append. Keep the plan learner-useful and non-performative. Output only valid JSON matching expect.
+  writer_station:
+    type: agent
+    identity: "Note Writer Station"
+    model: inherit
+    inputs: [export_request, plan_station, state_station, gnosis_config]
     skills: [pi-gnosis]
     tools: [read_file, write_file, edit_file]
     expect:
+      wrote_files: bool
       files_written_or_planned:
         type: list
         items: str
-      manifest_path: str
-      skipped_files:
-        type: list
-        items: str
-      warnings:
-        type: list
-        items: str
+      skipped_reason: str
     instructions: |
-      If apply_writes is false, return planned content only. If writes are enabled by Pi, write only under note_path, manifest first. Preserve user sections. Include source ids and open-ended probes. Output only valid JSON matching expect.
-  note_quality_gate:
+      If apply_writes is true, write exactly the planned note changes using gnosis_config. If apply_writes is false, return planned files only. Output only valid JSON matching expect.
+  quality_station:
     type: agent
-    identity: "Obsidian Note Quality Gate"
+    identity: "Note Quality Station"
     model: inherit
-    inputs: [note_writer, obsidian_contract, note_state_reader]
+    inputs: [plan_station, writer_station, note_contract]
     skills: [pi-gnosis]
     tools: [read_file, grep]
     expect:
       status: str
-      missing_required_notes:
+      note_quality: str
+      issues:
         type: list
         items: str
-      unsupported_claims:
-        type: list
-        items: str
-      weak_learning_sections:
-        type: list
-        items: str
-      cleanup_candidates:
+      manifest:
         type: list
         items: str
     instructions: |
-      Verify generated notes against the contract. Check for missing source ids, missing probes, missing review prompts, broken internal links if possible, and accidental overwrite risk. Output only valid JSON matching expect.
+      Check that notes are compact, useful, and written/planned as requested. Output only valid JSON matching expect.

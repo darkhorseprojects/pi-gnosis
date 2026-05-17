@@ -36,10 +36,10 @@ export function loadConfig(path = CONFIG_PATH, loadUser = true) {
   }
 
   if (config?.runtime?.provider !== 'pi') {
-    throw new Error('Pi-GNOSIS config must use runtime.provider = pi');
+    throw new Error('pi-gnosis config must use runtime.provider = pi');
   }
   if (config?.runtime?.model !== 'inherit') {
-    throw new Error('Pi-GNOSIS config must default runtime.model = inherit');
+    throw new Error('pi-gnosis config must default runtime.model = inherit');
   }
   return config;
 }

@@ -2,7 +2,7 @@
 
 ## Canonical memory
 
-Obsidian is the durable memory surface. It is what Pi-GNOSIS uses to resume, review, and continue learning.
+Obsidian is the durable memory surface. It is what pi-gnosis uses to resume, review, and continue learning.
 
 Store here:
 

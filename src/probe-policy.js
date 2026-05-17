@@ -12,7 +12,7 @@ export function isForbiddenProbe(prompt) {
 
 export function assertAllowedProbe(prompt) {
   if (isForbiddenProbe(prompt)) {
-    throw new Error('Recognition-only diagnostic probe is forbidden by Pi-GNOSIS policy');
+    throw new Error('Recognition-only diagnostic probe is forbidden by pi-gnosis policy');
   }
   return true;
 }

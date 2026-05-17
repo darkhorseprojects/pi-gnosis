@@ -1,7 +1,7 @@
 ---
 name: gnosis-geist-learning-lab
 description: >-
-  Pi-GNOSIS bundled skill for designing Geist-style interactive learning labs/widgets
+  pi-gnosis bundled skill for designing Geist-style interactive learning labs/widgets
   on zero-native surfaces. Use with pi-gnosis when creating temporary explorable
   explanations, prediction/feedback widgets, parameter explorers, code-learning
   labs, or active-recall pages.
@@ -14,7 +14,7 @@ model: inherit
 
 Upstream: Vercel Labs `skill-geist-learning-labs`.
 
-## Scope inside Pi-GNOSIS
+## Scope inside pi-gnosis
 
 Use this skill only for the `lab` / `widget` / `cooler page` modality:
 
@@ -69,7 +69,7 @@ Use compact equivalents of these Vercel Geist Learning Lab patterns:
 - Controls must visibly affect output within roughly 100ms or show an explicit loading state.
 - URL/search-param state is preferred for explorable parameters.
 
-## Pi-GNOSIS integration rules
+## pi-gnosis integration rules
 
 - Pair this skill with `pi-gnosis`; do not use it as an independent curriculum generator.
 - Run `graphs/interactive-artifact.circuitry.yaml` for actual artifact generation.
