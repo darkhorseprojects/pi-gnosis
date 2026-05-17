@@ -55,7 +55,7 @@
     "list:graphs": "node bin/pi-gnosis.js graphs"
   },
   "dependencies": {
-    "@darkhorseprojects/pi-circuitry": "github:darkhorseprojects/pi-circuitry#v0.2.23",
+    "@darkhorseprojects/pi-circuitry": "0.2.23",
     "pi-web-access": "^0.10.7",
     "zero-native": "^0.2.0"
   },
