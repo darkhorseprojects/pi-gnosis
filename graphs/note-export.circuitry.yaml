@@ -18,16 +18,16 @@ resources:
     label: "Note export request"
     value: |
       topic: ""
-      notes_root: "notes"
-      profile_note: "notes/profile.md"
-      note_path: "notes"
+      notes_root: "<configured obsidian root>"
+      profile_note: "<configured profile note>"
+      note_path: "<configured obsidian root>"
       apply_writes: false
       overwrite_policy: "preserve-user-edits"
   obsidian_contract:
     type: text
     label: "Obsidian contract"
     value: |
-      Obsidian is learner-facing memory and the source of truth for durable study material. Export 00-map.md, profile.md, source-ledger.md, concepts/*.md, misconceptions.md, probes.md, review-plan.md, reflection-log.md, sessions/*.md, and manifest.md. Preserve user edits where possible. Link concepts, sources, probes, and session notes.
+      Obsidian is learner-facing memory and the source of truth for durable study material. Export 00-map.md, profile.md, source-ledger.md, concepts/*.md, misconceptions.md, probes.md, review-plan.md, reflection-log.md, sessions/*.md, and manifest.md. Preserve user edits where possible. Link concepts, sources, probes, and session notes. Use the configured notes root and profile note from the Pi-GNOSIS config snapshot.
   write_policy:
     type: text
     label: "Write policy"

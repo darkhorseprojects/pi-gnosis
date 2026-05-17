@@ -20,9 +20,9 @@ resources:
       topic: "automated research pipelines and agentic tutors"
       purpose: "learn"
       output_modes: ["obsidian_notes"]
-      note_path: "notes"
-      notes_root: "notes"
-      profile_note: "notes/profile.md"
+      note_path: "<configured obsidian root>"
+      notes_root: "<configured obsidian root>"
+      profile_note: "<configured profile note>"
       depth: "working"
       learner_context: ""
       constraints: ""
@@ -53,7 +53,7 @@ resources:
     type: text
     label: "Storage contract"
     value: |
-      Obsidian is canonical: source notes, claim notes, concept notes, learner reflections, probe outcomes, review prompts, and manifests. Temporary research artifacts may exist only while the graph runs.
+      Obsidian is canonical: source notes, claim notes, concept notes, learner reflections, probe outcomes, review prompts, and manifests. Temporary research artifacts may exist only while the graph runs. Use the configured notes root and profile note from the Pi-GNOSIS config snapshot.
   prior_knowledge_audit:
     type: agent
     identity: "Prior Knowledge Auditor"

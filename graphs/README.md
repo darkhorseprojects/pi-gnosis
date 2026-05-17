@@ -20,3 +20,4 @@ The graph itself is the multi-actor workflow. Do not add a single generic simula
 - Video/lecture work routes to `manim-lecture.circuitry.yaml`.
 - Temporary pages and Geist-style widgets/labs route to `interactive-artifact.circuitry.yaml` and are cleanup-safe by default.
 - Durable learner notes route to `note-export.circuitry.yaml`.
+- Config-fed roots are the rule; file paths in graph resources are defaults/examples unless the Pi-GNOSIS config says otherwise.

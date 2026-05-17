@@ -18,9 +18,9 @@ resources:
     label: "Lecture request"
     value: |
       topic: ""
-      notes_root: "notes"
-      profile_note: "notes/profile.md"
-      output_root: "manim"
+      notes_root: "<configured obsidian root>"
+      profile_note: "<configured profile note>"
+      output_root: "<configured manim root>"
       render: "draft-if-environment-ready"
       apply_writes: false
   manim_policy:
@@ -54,7 +54,7 @@ resources:
         type: list
         items: str
     instructions: |
-      Read available notes when present. Extract concepts, misconceptions, source ids, and learner bottlenecks relevant to the requested lecture. Do not write. Output only valid JSON matching expect.
+      Read available notes when present. Extract concepts, misconceptions, source ids, and learner bottlenecks relevant to the requested lecture. Do not write. Output only valid JSON matching expect. Use the configured notes root, profile note, and manim root from the Pi-GNOSIS config snapshot.
   lecture_storyboarder:
     type: agent
     identity: "Manim Lecture Storyboarder"

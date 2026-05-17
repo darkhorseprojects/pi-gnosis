@@ -52,6 +52,7 @@ Never use multiple-choice diagnostic questions. Use recall, explain, transfer, c
 Obsidian is the persistent learner memory.
 
 - Store concept notes, session notes, source notes, misconceptions, review prompts, reflection logs, and the optional profile note under the configured notes root.
+- The paths in config are the source of truth; examples like `notes/` and `notes/profile.md` are defaults only.
 - Treat notes as the source of truth for what the learner should keep.
 - Temporary pages, labs, and videos are disposable teaching surfaces only.
 

@@ -49,7 +49,7 @@ The package pins `@darkhorseprojects/pi-circuitry` exactly and validates generat
 | Cooler page / widget / explorable lab | Geist learning patterns + zero-native | Disposable artifact; user-facing notes are written into Obsidian |
 | Durable notes | Obsidian | Source of truth for what the learner keeps |
 
-Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt.
+Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt. The note/profile paths are config-fed; `notes/` is only the default example.
 
 ## Credits
 

@@ -19,9 +19,9 @@ resources:
     value: |
       topic: ""
       learner_message: ""
-      note_path: "notes"
-      profile_note: "notes/profile.md"
-      session_note: "notes/sessions/current-session.md"
+      note_path: "<configured obsidian root>"
+      profile_note: "<configured profile note>"
+      session_note: "<configured session note>"
       preferred_mode: "pi decides"
       apply_writes: false
       user_may_quit_any_time: true
@@ -29,7 +29,7 @@ resources:
     type: text
     label: "Tutoring policy"
     value: |
-      This is non-linear. The learner may stop, resume, jump ahead, ask for a video, ask for notes, or change goals. Ask at most one modality or preference question when needed. Never use multiple-choice diagnostic probes. Use open-ended evidence to update the note-backed learner record.
+      This is non-linear. The learner may stop, resume, jump ahead, ask for a video, ask for notes, or change goals. Ask at most one modality or preference question when needed. Never use multiple-choice diagnostic probes. Use open-ended evidence to update the note-backed learner record. Use the configured notes root, profile note, and session note from the Pi-GNOSIS config snapshot.
   note_policy:
     type: text
     label: "Note policy"

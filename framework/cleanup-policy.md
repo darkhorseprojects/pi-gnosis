@@ -11,7 +11,6 @@ The cleanup graph may identify:
 
 It must preserve:
 
-- `.pi-gnosis/state/**` ledgers;
 - final notes;
 - final videos;
 - source ledgers;
