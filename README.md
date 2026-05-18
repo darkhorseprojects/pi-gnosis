@@ -59,7 +59,7 @@ Interactive artifacts are active-learning surfaces, not permanent memory. Every 
 ## Dependencies
 
 Required:
-- `@darkhorseprojects/pi-circuitry` 0.2.27
+- `@darkhorseprojects/pi-circuitry` 0.2.28
 - `pi-web-access` ^0.10.7
 - `zero-native` ^0.2.0 for temporary native pages and interactive labs
 Optional:

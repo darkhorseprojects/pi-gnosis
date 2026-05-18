@@ -2,8 +2,8 @@
 """Structural checker for Pi-GNOSIS Circuitry v0.2 graph programs.
 
 This is not a replacement for the official pi-circuitry/circuitry validator. It is a
-local smoke verifier used in offline packaging to catch schema drift, legacy graph
-shapes, missing model inheritance, unsafe wiring, and the prior architecture mistake
+local smoke verifier used in offline packaging to catch schema drift, forbidden
+non-v0.2 graph shapes, missing model inheritance, unsafe wiring, and the prior architecture mistake
 of treating Circuitry itself as a single generic orchestration node.
 """
 from __future__ import annotations
@@ -14,7 +14,7 @@ from typing import Any
 
 import yaml
 
-LEGACY_TOP_LEVEL = {"agents", "inputs", "edges"}
+FORBIDDEN_TOP_LEVEL = {"nodes", "edges", "agents", "inputs"}
 EXECUTABLE_TYPES = {"agent", "tool"}
 BANNED_IDENTITIES = {"Generic Simulation Node", "Simulation Orchestrator"}
 WEB_TOOLS = {"web_search", "fetch_content", "exa_search"}
@@ -50,9 +50,9 @@ def validate_graph(path: Path) -> list[str]:
         if runtime.get("model") != "inherit":
             issues.append(fail(path, "runtime.model must be inherit"))
 
-    for key in LEGACY_TOP_LEVEL:
+    for key in FORBIDDEN_TOP_LEVEL:
         if key in data:
-            issues.append(fail(path, f"must not mix v0.2 resources with legacy top-level {key}"))
+            issues.append(fail(path, f"authored v0.2 graph files must not use top-level {key}"))
 
     resources = data.get("resources")
     if not isinstance(resources, dict) or not resources:

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-const LEGACY_TOP_LEVEL = ['agents:', 'edges:'];
+const FORBIDDEN_TOP_LEVEL = ['nodes:', 'edges:', 'agents:', 'inputs:'];
 const BANNED_IDENTITIES = ['Generic Simulation Node', 'Simulation Orchestrator'];
 
 export function validateCircuitryText(text, filename = '<graph>') {
@@ -14,9 +14,9 @@ export function validateCircuitryText(text, filename = '<graph>') {
   if (!/resources:\s*\n/.test(text)) {
     issues.push(`${filename}: missing resources map`);
   }
-  for (const key of LEGACY_TOP_LEVEL) {
+  for (const key of FORBIDDEN_TOP_LEVEL) {
     const re = new RegExp(`^${key}`, 'm');
-    if (re.test(text)) issues.push(`${filename}: must not use legacy top-level ${key}`);
+    if (re.test(text)) issues.push(`${filename}: authored v0.2 graph files must not use top-level ${key}`);
   }
   for (const phrase of BANNED_IDENTITIES) {
     if (text.includes(phrase)) issues.push(`${filename}: contains banned fake simulation node identity`);
