@@ -102,6 +102,51 @@ Before I start: what kind of linear algebra path do you want?
 - memory: should I keep durable notes and track misconceptions in Obsidian?
 ```
 
+After the learner answers intake, pass the answer back as runtime input. Do not rely on conversation memory alone. Example for `quick, calc ready, interactive lab, no` after `teach me linear algebra`:
+
+```json
+{
+  "filename": "/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml",
+  "inputs": {
+    "session_request": {
+      "learner_request": "teach me linear algebra",
+      "stage": "intake_response",
+      "intake_response": "quick, calc ready, interactive lab, no",
+      "topic": "linear algebra",
+      "scope": "quick intuition",
+      "background": "calculus-ready",
+      "desired_modality": "interactive lab",
+      "notes_intent": "no",
+      "artifact_intent": "interactive lab",
+      "recent_context": "User asked: teach me linear alg. Pi asked intake: scope/background/surface/memory. User answered: quick, calc ready, interactive lab, no."
+    }
+  }
+}
+```
+
+If the selected route is interactive, immediately run the interactive artifact graph with a concrete artifact request. Example:
+
+```json
+{
+  "filename": "/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/interactive-artifact.circuitry.yaml",
+  "inputs": {
+    "artifact_request": {
+      "learner_request": "teach me linear algebra",
+      "topic": "linear algebra",
+      "scope": "quick intuition",
+      "background": "calculus-ready",
+      "artifact_kind": "interactive lab",
+      "learner_goal": "Build geometric intuition for matrices as transformations",
+      "desired_interaction": "manipulate a 2x2 matrix and see vectors/grid change",
+      "notes_intent": "no",
+      "apply_writes": true,
+      "open_requested": true,
+      "recent_context": "User wants a quick calculus-ready interactive lab and no durable notes."
+    }
+  }
+}
+```
+
 If the user ignores the intake and says "just start", run `tutoring-session` again with defaults: full intro, geometric-first, chat+ASCII, notes planned but not written. The graph should still branch from learner answers instead of following a rigid syllabus.
 
 ## Probe loop
@@ -127,7 +172,9 @@ Do not guess the medium forever. Use intake and probe evidence to route non-line
 - visual lecture/video: `manim-lecture`
 - interactive visualization/practice: `interactive-artifact`
 
-If the user asks for a video/page/widget/notes directly, route immediately to that graph with the topic and write/render intent. Do not spawn a generic minion.
+If the user asks for a video/page/widget/lab/notes directly, route immediately to that graph with the topic, learner profile, and write/render/open intent. Empty `inputs` are invalid for pi-gnosis graph runs except dependency smoke checks.
+
+For interactive labs, use `/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/interactive-artifact.circuitry.yaml` with `inputs.artifact_request`. Include topic, scope, background, artifact kind, learner goal, desired interaction, notes intent, `apply_writes`, and `open_requested`. Do not run this graph with `{}`.
 
 ## Obsidian memory
 

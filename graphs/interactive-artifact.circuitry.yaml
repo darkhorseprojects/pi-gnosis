@@ -41,7 +41,7 @@ resources:
       open_requested: bool
       success_condition: str
     instructions: |
-      Parse the runtime input into a concrete temporary learning artifact job. Output only valid JSON matching expect.
+      Parse the runtime input into a concrete temporary learning artifact job. The runtime artifact_request must include a real topic or learner_request, artifact_kind, learner_goal, and write/open intent. If artifact_request is empty or generic, set topic to "missing", write_requested false, open_requested false, and success_condition to "blocked: missing concrete artifact_request". Never invent a meta-learning artifact when the request is empty. Output only valid JSON matching expect.
   learning_loop_station:
     type: agent
     identity: "Learning Loop Station"
@@ -59,7 +59,7 @@ resources:
       reflection: str
       misconception_to_surface: str
     instructions: |
-      Design the smallest active learning loop. The learner should attempt before explanation. Avoid multiple-choice diagnostics. Output only valid JSON matching expect.
+      Design the smallest active learning loop for the concrete topic from intake_station. If intake_station reports a blocked or missing topic, output a blocked loop that asks for the missing artifact_request instead of designing a generic/meta lab. The learner should attempt before explanation. Avoid multiple-choice diagnostics. Output only valid JSON matching expect.
   surface_station:
     type: agent
     identity: "Surface Design Station"
@@ -81,7 +81,7 @@ resources:
         type: list
         items: str
     instructions: |
-      Plan the zero-native surface. For labs/widgets, use gnosis-geist-learning-lab patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. Output only valid JSON matching expect.
+      Plan the zero-native surface for the concrete artifact topic and goal. For labs/widgets, use gnosis-geist-learning-lab patterns such as ParameterDock, QuickCheck, HintLadder, WorkedExample, InteractiveDiagram, BeforeAfterSplit, or TimelineExplorer. If intake_station is blocked or missing a concrete topic, keep files_to_create empty and surface_type "blocked". Output only valid JSON matching expect.
   writer_station:
     type: agent
     identity: "Artifact Writer Station"
@@ -101,7 +101,7 @@ resources:
         type: list
         items: str
     instructions: |
-      Use gnosis_config to choose an artifact root. If apply_writes is true, write a runnable temporary artifact and its manifest before other files. If apply_writes is false, return planned contents and commands. Output only valid JSON matching expect.
+      Use gnosis_config to choose an artifact root. Treat artifact_request.apply_writes true or intake_station.write_requested true as write authorization. If the request is blocked, missing a concrete topic, or missing artifact kind, do not write and explain the missing runtime input. If writes are authorized, write a runnable temporary artifact and its manifest before other files; do not claim files were written unless write succeeded. If writes are not authorized, return planned contents and commands. Output only valid JSON matching expect.
   quality_station:
     type: agent
     identity: "Artifact Quality Station"
@@ -118,4 +118,4 @@ resources:
         items: str
       final_message: str
     instructions: |
-      Verify that the output is an active temporary learning artifact, not a passive page. Check artifact status and opening instructions. Output only valid JSON matching expect.
+      Verify that the output is an active temporary learning artifact for the requested topic, not a passive page and not a generic/meta artifact. If writer_station says blocked or planned_not_written, status must be failed and final_message must state the exact missing input or write authorization. Check artifact status and opening instructions. Output only valid JSON matching expect.
