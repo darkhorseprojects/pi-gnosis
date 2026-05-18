@@ -42,7 +42,19 @@ Use this control loop for every learning request. It is explicit but non-linear:
 
 3rd, build runtime input. Include the learner request, recent context, inferred stage, known preferences, requested outputs, write/render/export intent, and whether durable notes are wanted.
 
-4th, run the graph program with filename + runtime inputs. Use the pi-gnosis graph runner when available; otherwise call `circuitry_run_graph` directly with the graph filename and `inputs`.
+4th, run the graph program with `circuitry_run_graph` using the exact graph filename and `inputs`. Do not set `source` for saved files. Do not use graph nicknames as filenames.
+
+Installed graph filenames:
+
+```text
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/research.circuitry.yaml
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/note-export.circuitry.yaml
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/manim-lecture.circuitry.yaml
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/interactive-artifact.circuitry.yaml
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/cleanup.circuitry.yaml
+/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/minimal-smoke.circuitry.yaml
+```
 
 5th, read the graph result with `circuitry_read_graph` for the same filename.
 
@@ -54,18 +66,21 @@ Use this control loop for every learning request. It is explicit but non-linear:
 
 When the user asks a broad learning request and has not already provided scope/current level/modality, do **not** start teaching immediately.
 
-Run `tutoring-session` with:
+Run `/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml` with:
 
 ```json
 {
-  "session_request": {
-    "learner_request": "teach me linear algebra",
-    "stage": "intake",
-    "known_preferences": {},
-    "recent_context": "",
-    "desired_modality": "unknown",
-    "notes_intent": "ask",
-    "artifact_intent": "ask"
+  "filename": "/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml",
+  "inputs": {
+    "session_request": {
+      "learner_request": "teach me linear algebra",
+      "stage": "intake",
+      "known_preferences": {},
+      "recent_context": "",
+      "desired_modality": "unknown",
+      "notes_intent": "ask",
+      "artifact_intent": "ask"
+    }
   }
 }
 ```
@@ -137,9 +152,9 @@ The coordinator does not search for roots, resolve artifact paths, or choose sto
 
 For video requests:
 
-1st, select `manim-lecture`.
+1st, select `/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/manim-lecture.circuitry.yaml`.
 
-2nd, pass `lecture_request` with topic, scope, render mode, write intent, and any learner profile/probe evidence.
+2nd, call `circuitry_run_graph` with that exact filename and `inputs.lecture_request` containing topic, scope, render mode, write intent, and any learner profile/probe evidence. Do not set `source`.
 
 3rd, run the graph program.
 

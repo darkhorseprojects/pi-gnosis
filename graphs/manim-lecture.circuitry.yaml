@@ -48,7 +48,7 @@ resources:
     model: inherit
     inputs: [intake_station, gnosis_config]
     skills: [pi-gnosis]
-    tools: [read_file, grep]
+    tools: [read, grep]
     expect:
       relevant_concepts:
         type: list
@@ -93,7 +93,7 @@ resources:
     model: inherit
     inputs: [lecture_request, gnosis_config, intake_station, storyboard_station, lecture_contract]
     skills: [pi-gnosis, manim-video]
-    tools: [read_file, write_file, edit_file]
+    tools: [read, write, edit]
     expect:
       project_root: str
       files_written_or_planned:
@@ -104,14 +104,14 @@ resources:
         type: list
         items: str
     instructions: |
-      Use gnosis_config to choose a project root. Create or plan plan.md, scene_spec.json, script.py, render.sh, and README.md. If apply_writes is true, write the files. Do not render here. Output only valid JSON matching expect.
+      Use gnosis_config to choose a project root. Create plan.md, scene_spec.json, script.py, render.sh, and README.md when lecture_request authorizes writes. Do not claim files exist unless the write tool succeeded. Do not render here. Output only valid JSON matching expect.
   preflight_station:
     type: agent
     identity: "Render Preflight Station"
     model: inherit
     inputs: [project_station]
     skills: [manim-video]
-    tools: [read_file, shell]
+    tools: [read, bash]
     expect:
       can_render: bool
       checks:
@@ -130,7 +130,7 @@ resources:
     model: inherit
     inputs: [storyboard_station, project_station, preflight_station, lecture_contract]
     skills: [pi-gnosis, manim-video]
-    tools: [read_file]
+    tools: [read]
     expect:
       status: str
       learning_objective_match: str

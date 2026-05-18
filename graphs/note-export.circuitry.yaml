@@ -49,7 +49,7 @@ resources:
     model: inherit
     inputs: [intake_station, gnosis_config]
     skills: [pi-gnosis]
-    tools: [read_file, grep]
+    tools: [read, grep]
     expect:
       existing_notes:
         type: list
@@ -88,7 +88,7 @@ resources:
     model: inherit
     inputs: [export_request, plan_station, state_station, gnosis_config]
     skills: [pi-gnosis]
-    tools: [read_file, write_file, edit_file]
+    tools: [read, write, edit]
     expect:
       wrote_files: bool
       files_written_or_planned:
@@ -103,7 +103,7 @@ resources:
     model: inherit
     inputs: [plan_station, writer_station, note_contract]
     skills: [pi-gnosis]
-    tools: [read_file, grep]
+    tools: [read, grep]
     expect:
       status: str
       note_quality: str

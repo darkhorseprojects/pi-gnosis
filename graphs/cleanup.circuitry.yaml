@@ -46,7 +46,7 @@ resources:
     model: inherit
     inputs: [intake_station, gnosis_config]
     skills: [pi-gnosis]
-    tools: [read_file, grep, shell]
+    tools: [read, grep, bash]
     expect:
       candidate_artifacts:
         type: list
@@ -85,7 +85,7 @@ resources:
     model: inherit
     inputs: [cleanup_request, decision_station, cleanup_contract]
     skills: [pi-gnosis]
-    tools: [shell]
+    tools: [bash]
     expect:
       deleted:
         type: list

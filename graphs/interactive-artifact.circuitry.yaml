@@ -88,7 +88,7 @@ resources:
     model: inherit
     inputs: [artifact_request, gnosis_config, intake_station, learning_loop_station, surface_station, artifact_contract]
     skills: [pi-gnosis]
-    tools: [read_file, write_file, edit_file, shell]
+    tools: [read, write, edit, bash]
     expect:
       artifact_root: str
       manifest_path: str
@@ -108,7 +108,7 @@ resources:
     model: inherit
     inputs: [learning_loop_station, surface_station, writer_station, artifact_contract]
     skills: [pi-gnosis]
-    tools: [read_file]
+    tools: [read]
     expect:
       status: str
       active_learning_loop_present: bool

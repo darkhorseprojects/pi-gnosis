@@ -55,7 +55,7 @@ resources:
     model: inherit
     inputs: [intake_station, gnosis_config]
     skills: [pi-gnosis]
-    tools: [read_file, grep]
+    tools: [read, grep]
     expect:
       relevant_memory:
         type: list
