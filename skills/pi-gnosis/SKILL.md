@@ -56,7 +56,7 @@ graphs/cleanup.circuitry.yaml
 graphs/minimal-smoke.circuitry.yaml
 ```
 
-When calling `circuitry_run_graph`, use the resolved absolute path to that package-local graph file. If needed, resolve it with `command find ~/.pi/agent/git -path '*/darkhorseprojects/pi-gnosis/graphs/<graph>.circuitry.yaml' -print -quit` or by reading the package location from the expanded skill path. Never hardcode a user's home directory.
+When calling `circuitry_run_graph`, use the resolved absolute path to that package-local graph file. If needed, resolve it with `command find ~/.pi/agent/git -path '*/darkhorseprojects/pi-gnosis/graphs/<graph>.circuitry.yaml' -print -quit` or by reading the package location from the expanded skill path.
 
 5th, read the graph result with `circuitry_read_graph` for the same filename.
 
