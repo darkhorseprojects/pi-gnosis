@@ -44,17 +44,19 @@ Use this control loop for every learning request. It is explicit but non-linear:
 
 4th, run the graph program with `circuitry_run_graph` using the exact graph filename and `inputs`. Do not set `source` for saved files. Do not use graph nicknames as filenames.
 
-Installed graph filenames:
+Graph filenames are package-relative under this skill package's `graphs/` directory:
 
 ```text
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/research.circuitry.yaml
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/note-export.circuitry.yaml
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/manim-lecture.circuitry.yaml
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/interactive-artifact.circuitry.yaml
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/cleanup.circuitry.yaml
-/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/minimal-smoke.circuitry.yaml
+graphs/research.circuitry.yaml
+graphs/tutoring-session.circuitry.yaml
+graphs/note-export.circuitry.yaml
+graphs/manim-lecture.circuitry.yaml
+graphs/interactive-artifact.circuitry.yaml
+graphs/cleanup.circuitry.yaml
+graphs/minimal-smoke.circuitry.yaml
 ```
+
+When calling `circuitry_run_graph`, use the resolved absolute path to that package-local graph file. If needed, resolve it with `command find ~/.pi/agent/git -path '*/darkhorseprojects/pi-gnosis/graphs/<graph>.circuitry.yaml' -print -quit` or by reading the package location from the expanded skill path. Never hardcode a user's home directory.
 
 5th, read the graph result with `circuitry_read_graph` for the same filename.
 
@@ -66,11 +68,11 @@ Installed graph filenames:
 
 When the user asks a broad learning request and has not already provided scope/current level/modality, do **not** start teaching immediately.
 
-Run `/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml` with:
+Run `<resolved-pi-gnosis-package>/graphs/tutoring-session.circuitry.yaml` with:
 
 ```json
 {
-  "filename": "/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml",
+  "filename": "<resolved-pi-gnosis-package>/graphs/tutoring-session.circuitry.yaml",
   "inputs": {
     "session_request": {
       "learner_request": "teach me linear algebra",
@@ -106,7 +108,7 @@ After the learner answers intake, pass the answer back as runtime input. Do not 
 
 ```json
 {
-  "filename": "/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/tutoring-session.circuitry.yaml",
+  "filename": "<resolved-pi-gnosis-package>/graphs/tutoring-session.circuitry.yaml",
   "inputs": {
     "session_request": {
       "learner_request": "teach me linear algebra",
@@ -128,7 +130,7 @@ If the selected route is interactive, immediately run the interactive artifact g
 
 ```json
 {
-  "filename": "/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/interactive-artifact.circuitry.yaml",
+  "filename": "<resolved-pi-gnosis-package>/graphs/interactive-artifact.circuitry.yaml",
   "inputs": {
     "artifact_request": {
       "learner_request": "teach me linear algebra",
@@ -174,7 +176,7 @@ Do not guess the medium forever. Use intake and probe evidence to route non-line
 
 If the user asks for a video/page/widget/lab/notes directly, route immediately to that graph with the topic, learner profile, and write/render/open intent. Empty `inputs` are invalid for pi-gnosis graph runs except dependency smoke checks.
 
-For interactive labs, use `/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/interactive-artifact.circuitry.yaml` with `inputs.artifact_request`. Include topic, scope, background, artifact kind, learner goal, desired interaction, notes intent, `apply_writes`, and `open_requested`. Do not run this graph with `{}`.
+For interactive labs, use `<resolved-pi-gnosis-package>/graphs/interactive-artifact.circuitry.yaml` with `inputs.artifact_request`. Include topic, scope, background, artifact kind, learner goal, desired interaction, notes intent, `apply_writes`, and `open_requested`. Do not run this graph with `{}`.
 
 ## Obsidian memory
 
@@ -199,7 +201,7 @@ The coordinator does not search for roots, resolve artifact paths, or choose sto
 
 For video requests:
 
-1st, select `/home/colin/.pi/agent/git/github.com/darkhorseprojects/pi-gnosis/graphs/manim-lecture.circuitry.yaml`.
+1st, select `<resolved-pi-gnosis-package>/graphs/manim-lecture.circuitry.yaml`.
 
 2nd, call `circuitry_run_graph` with that exact filename and `inputs.lecture_request` containing topic, scope, render mode, write intent, and any learner profile/probe evidence. Do not set `source`.
 
