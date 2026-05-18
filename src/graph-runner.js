@@ -26,12 +26,11 @@ export function requestResourceFor(name) {
   return resource;
 }
 
-export function gnosisGraphInputs(name, input, { includeConfig = true, config = loadConfig() } = {}) {
-  const inputs = {
+export function gnosisGraphInputs(name, input, { config = loadConfig() } = {}) {
+  return {
     [requestResourceFor(name)]: input ?? {},
+    gnosis_config: config,
   };
-  if (includeConfig) inputs.gnosis_config = config;
-  return inputs;
 }
 
 export function gnosisGraphRunArgs(name, input, options = {}) {

@@ -4,67 +4,101 @@
 [![CI](https://github.com/darkhorseprojects/pi-gnosis/actions/workflows/ci.yml/badge.svg)](https://github.com/darkhorseprojects/pi-gnosis/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Source-grounded research and non-linear tutoring for [Pi](https://github.com/earendil-works/pi-coding-agent). @darkhorseprojects/pi-gnosis dispatches learning requests into saved Circuitry graph programs with runtime inputs.
+pi-gnosis routes learning requests into saved Circuitry graph programs. Each graph receives two runtime inputs:
 
-## Features
+- a graph-specific request resource
+- `gnosis_config`, loaded from package config and user config
 
-- **Non-linear tutoring**: Adaptive learning that responds to demonstrated understanding
-- **Source-grounded research**: Every claim traces back to fetched sources
-- **Open-ended probes**: Recall, explain, transfer, contrast, debug - no multiple-choice
-- **Obsidian integration**: Export notes to a compatible learning vault
-- **Manim lectures**: Generate video lectures with local Manim CE
-- **zero-native pages**: Generate temporary native learning pages that open as disposable study surfaces
-- **Geist-style labs/widgets**: Generate explorable attempt→feedback learning labs using Geist learning patterns on zero-native surfaces
-- **Conversation-native text**: Keep text, ASCII diagrams, and markdown in the Pi conversation when no artifact is needed
-- **Obsidian-first memory**: Notes, reflections, and prompts are the durable learning surface
+The graph returns a tutoring, research, note, video, page, lab, or cleanup result for Pi to report.
 
-## Graph Programs
+## Runtime contract
 
-| Graph | Purpose |
+```json
+{
+  "filename": "<package>/graphs/manim-lecture.circuitry.yaml",
+  "inputs": {
+    "lecture_request": {
+      "topic": "linear algebra",
+      "scope": "quick intuition",
+      "apply_writes": true,
+      "render_requested": true
+    },
+    "gnosis_config": {
+      "runtime": { "provider": "pi", "model": "inherit" },
+      "paths": {}
+    }
+  }
+}
+```
+
+`gnosis_config` is part of every pi-gnosis graph run. It supplies artifact roots, note roots, runtime policy, and cleanup boundaries. Artifact-capable graphs reject or report a blocked state when the configured root needed for a write is unavailable.
+
+Runtime inputs are overlays for one execution. Graph YAML is not edited for learner-specific requests.
+
+## Graph programs
+
+| Graph | Request resource | Output |
+| --- | --- | --- |
+| `graphs/tutoring-session.circuitry.yaml` | `session_request` | intake, probe, teaching move, or downstream graph route |
+| `graphs/research.circuitry.yaml` | `research_request` | source-grounded synthesis and optional note-export input |
+| `graphs/note-export.circuitry.yaml` | `export_request` | planned or written Obsidian note update |
+| `graphs/manim-lecture.circuitry.yaml` | `lecture_request` | Manim project, render/preflight status, artifact manifest |
+| `graphs/interactive-artifact.circuitry.yaml` | `artifact_request` | zero-native page/lab/widget artifact manifest |
+| `graphs/cleanup.circuitry.yaml` | `cleanup_request` | cleanup plan and bounded deletion result |
+| `graphs/minimal-smoke.circuitry.yaml` | `smoke_request` | dependency/runtime smoke result |
+
+## Configuration
+
+Default config lives at `config/gnosis.config.json`. User config at `~/.pi/pi-gnosis.json` is deep-merged by the package loader.
+
+Default paths:
+
+| Path key | Default |
 | --- | --- |
-| `graphs/research.circuitry.yaml` | Delegated research pipeline: scope, query planning, source discovery, fetching, claim extraction, critique, and Obsidian note planning |
-| `graphs/tutoring-session.circuitry.yaml` | Non-linear tutoring turn planner with open-ended probes and state updates |
-| `graphs/note-export.circuitry.yaml` | Obsidian note export and refresh from durable notes |
-| `graphs/manim-lecture.circuitry.yaml` | Video/lecture project generation using bundled manim-video skill |
-| `graphs/interactive-artifact.circuitry.yaml` | Temporary zero-native pages and Geist-style explorable labs/widgets |
-| `graphs/cleanup.circuitry.yaml` | Safe cleanup pass for temporary artifacts created by graph runs |
-| `graphs/minimal-smoke.circuitry.yaml` | Tiny graph for Circuitry shape validation |
+| `temporaryRoot` | `/tmp/pi-gnosis` |
+| `obsidianRoot` | `notes` |
+| `profileNote` | `notes/profile.md` |
+| `manimRoot` | `/tmp/pi-gnosis/manim` |
+| `interactiveArtifactRoot` | `/tmp/pi-gnosis/interactive-artifacts` |
 
-## Installation
+Graph stations that write files consume configured roots; they do not choose storage roots from prose.
+
+## Learning surfaces
+
+| Surface | Engine | Persistence |
+| --- | --- | --- |
+| Text / ASCII / markdown | Pi conversation | conversation only |
+| Video / lecture | Manim CE project | configured Manim root |
+| Temporary page | zero-native | configured interactive artifact root |
+| Lab / widget | Geist-style learning pattern + zero-native | configured interactive artifact root |
+| Durable notes | Obsidian-compatible markdown | configured notes root |
+
+## Development
 
 ```bash
 npm install
 npm test
 ```
 
-The package pins `@darkhorseprojects/pi-circuitry` exactly and validates Circuitry YAML against the bundled v0.2 structural checker. Runtime execution requires a Pi environment with network access.
-
-## Learning modalities
-
-| Modality | Engine | Persistence |
-| --- | --- | --- |
-| Text / ASCII / markdown | Pi conversation | Conversation only unless copied into notes |
-| Video / lecture | Manim | Generated project/media under configured Manim root |
-| Temporary page | zero-native | Disposable artifact under `/tmp/pi-gnosis/interactive-artifacts` |
-| Cooler page / widget / explorable lab | Geist learning patterns + zero-native | Disposable artifact; user-facing notes are written into Obsidian |
-| Durable notes | Obsidian | Source of truth for what the learner keeps |
-
-Interactive artifacts are active-learning surfaces, not permanent memory. Every generated page or lab must include an attempt, feedback, explanation, checkpoint, and reflection prompt. The note/profile paths are config-fed; `notes/` is only the default example. Disposable work defaults under `/tmp/pi-gnosis`.
-
-## Credits
-
-- Native temporary pages use [Vercel Labs zero-native](https://github.com/vercel-labs/zero-native).
-- Geist-style labs/widgets use the bundled `gnosis-geist-learning-lab` skill. Upstream: [Vercel Labs skill-geist-learning-labs](https://github.com/vercel-labs/skill-geist-learning-labs).
+The test suite checks graph shape, runtime config policy, probe policy, artifact builders, and package contents.
 
 ## Dependencies
 
 Required:
+
 - `@darkhorseprojects/pi-circuitry` 0.2.30
 - `pi-web-access` ^0.10.7
-- `zero-native` ^0.2.0 for temporary native pages and interactive labs
+- `zero-native` ^0.2.0
+
 Optional:
+
 - `pi-exa-search` for Exa-first source discovery
+
+## Credits
+
+- Native temporary pages use [Vercel Labs zero-native](https://github.com/vercel-labs/zero-native).
+- Geist-style lab patterns are adapted from [Vercel Labs skill-geist-learning-labs](https://github.com/vercel-labs/skill-geist-learning-labs).
 
 ## License
 
-Apache 2.0 - see [LICENSE](LICENSE) file for details.
+Apache-2.0. See `LICENSE`.

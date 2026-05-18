@@ -2,94 +2,85 @@
 name: gnosis-geist-learning-lab
 description: >-
   pi-gnosis bundled skill for designing Geist-style interactive learning labs/widgets
-  on zero-native surfaces. Use with pi-gnosis when creating temporary explorable
-  explanations, prediction/feedback widgets, parameter explorers, code-learning
-  labs, or active-recall pages.
-author: Vercel Labs
-source: https://github.com/vercel-labs/skill-geist-learning-labs
+  on zero-native surfaces. Use with pi-gnosis for temporary explorable explanations,
+  prediction/feedback widgets, parameter explorers, code-learning labs, and active-recall pages.
 model: inherit
 ---
 
-# GNOSIS Geist Learning Lab
+# Geist-style learning lab contract
 
-Upstream: Vercel Labs `skill-geist-learning-labs`.
+## Scope
 
-## Scope inside pi-gnosis
+Use this skill inside the `interactive-artifact` graph for the `lab`, `widget`, and richer temporary page modalities.
 
-Use this skill only for the `lab` / `widget` / `cooler page` modality:
+Surface routing:
 
 ```text
 text / ASCII / markdown -> Pi conversation
 video / lecture         -> Manim
 page                    -> zero-native
 lab / widget            -> this skill + zero-native
-notes                   -> Obsidian note-export
+notes                   -> note-export
 ```
 
-The generated artifact is temporary by default. The durable learning record is the learner's own notes or a note-export graph run.
+Generated labs are temporary artifacts. Durable learning records are written through `note-export` when authorized.
 
-## Non-negotiable learning loop
+## Learning loop
 
-Every lab/widget must include:
+A lab/widget has these learner-visible parts:
 
-1. Orient: one clear learning objective.
-2. Attempt: learner predicts, explains, edits, or manipulates before the explanation.
-3. Feedback: immediate, specific feedback anchored to the attempt.
-4. Explain: short explanation after the attempt.
-5. Checkpoint: open-ended recall/transfer prompt.
-6. Reflect: prompt the learner to write what changed in their mental model.
+1. Orient: one learning objective.
+2. Attempt: prediction, explanation, edit, manipulation, or input before explanation.
+3. Feedback: immediate response anchored to the attempt.
+4. Explain: short explanation after feedback.
+5. Checkpoint: open recall or transfer prompt.
+6. Reflect: prompt for the learner's changed mental model.
 
-No passive-only pages.
+Passive pages are ordinary pages, not labs.
 
-## Preferred components/patterns
+## Patterns
 
-Use compact equivalents of these Vercel Geist Learning Lab patterns:
+- `ParameterDock`: sliders/toggles with visible output changes
+- `LiveOutputPanel`: immediate consequence display
+- `InteractiveDiagram`: visual state/flow/model representation
+- `QuickCheck`: active recall prompt with feedback
+- `HintLadder`: progressive hints
+- `WorkedExample`: stepwise reveal after learner attempt
+- `BeforeAfterSplit`: contrast two near cases
+- `TimelineExplorer`: scrub algorithm/process state over time
+- `ConceptMap`: relationship map when topology matters
 
-- `ParameterDock`: sliders/toggles with visible output changes.
-- `LiveOutputPanel`: immediate consequence display.
-- `InteractiveDiagram`: visual state/flow/model representation.
-- `QuickCheck`: active recall prompt with feedback.
-- `HintLadder`: progressive hints, not answer dumps.
-- `WorkedExample`: stepwise reveal after learner attempt.
-- `BeforeAfterSplit`: contrast two near cases.
-- `TimelineExplorer`: scrub algorithm/process state over time.
-- `ConceptMap`: show relationships when topology matters.
+## UI contract
 
-## Visual/design constraints
+- dark-first, minimal, precise UI
+- one concept and one primary action visible at a time
+- progressive disclosure for why, edge cases, formal definitions, and performance notes
+- controls visibly affect output within roughly 100ms or show loading state
+- URL/search-param state for explorable parameters when practical
 
-- Dark-first, minimal, precise UI.
-- Use color as learning signal:
-  - green: correct/completed
-  - red: incorrect/error
-  - amber: hint/caution
-  - blue: current/info/definition
-  - gray: neutral/chrome
-- One concept + one action visible at a time.
-- Progressive disclosure for depth: why, edge cases, formal definition, performance notes.
-- Controls must visibly affect output within roughly 100ms or show an explicit loading state.
-- URL/search-param state is preferred for explorable parameters.
+Color semantics:
 
-## pi-gnosis integration rules
+| Color | Meaning |
+| --- | --- |
+| green | correct/completed |
+| red | incorrect/error |
+| amber | hint/caution |
+| blue | current/info/definition |
+| gray | neutral/chrome |
 
-- Pair this skill with `pi-gnosis`; do not use it as an independent curriculum generator.
-- Run `graphs/interactive-artifact.circuitry.yaml` for actual artifact generation.
-- Generated labs should target zero-native as the native page shell.
-- Native policy must remain strict: no broad navigation, no native bridge unless explicitly required, no hidden filesystem access.
-- Write only under the configured interactive artifact temp root.
-
-## Prompting shape for artifact agents
-
-When designing a lab, produce this shape:
+## Artifact input shape
 
 ```json
 {
   "objective": "one sentence",
-  "misconception": "the trap the lab surfaces",
+  "misconception": "trap the lab surfaces",
   "attempt": "what learner does before explanation",
   "interactive_control": "slider/toggle/input/scrubber/editor",
   "visible_effect": "what changes immediately",
   "feedback_rule": "how feedback is derived",
-  "checkpoint": "open-ended recall or transfer prompt",
+  "checkpoint": "open recall or transfer prompt",
   "reflection": "what the learner should write down"
 }
 ```
+
+The artifact root comes from `gnosis_config.paths.interactiveArtifactRoot` plus a deterministic slug.

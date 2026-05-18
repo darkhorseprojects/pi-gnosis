@@ -2,73 +2,63 @@
 name: pi-gnosis
 description: >-
   Primary pi-gnosis learning/research system for source-grounded tutoring, notes,
-  videos, temporary pages, and interactive widgets/labs. Use when the user wants
-  to learn about something longer-term than a small fact: studying a topic,
-  building understanding over multiple turns, making durable notes, researching
-  sources, or creating learning artifacts like videos, pages, and interactive labs.
-  Obsidian notes are the persistent memory surface.
+  videos, temporary pages, and interactive widgets/labs. Use for learning requests,
+  multi-turn tutoring, research, Obsidian notes, Manim videos, and temporary labs/pages.
 ---
 
 # pi-gnosis
 
-Pi is the dispatcher. Circuitry graph files are saved graph programs. Runtime inputs are the graph args. Circuitry runs the program. Pi reads the result and reports it to the learner.
+## Contract
 
-## Core rule
+Use saved Circuitry graph programs. Put learner-specific data in `circuitry_run_graph.inputs`.
 
-Run graph programs; do not rewrite them for each learner request. Request-specific information belongs in `circuitry_run_graph.inputs`, not in edited YAML, ad hoc canvas patches, or generic minions.
+Every pi-gnosis graph run includes:
 
-Do not silently fall back to an ordinary lesson. If the graph runtime/tool is unavailable, say that plainly and continue with the same pi-gnosis stage contract in conversation.
-
-## Learning turn control loop
-
-Use this control loop for every learning request. It is explicit but non-linear: every turn can branch, jump topics, change modality, create artifacts, write notes, or return to probing based on learner state and probe evidence. Do not force a fixed curriculum order.
-
-1st, classify the request:
-
-- `new_broad_topic`: user says "teach me X", "I want to learn X", "full intro to X", or similar without enough scope/current-level/modality.
-- `continue_tutoring`: user answers a probe, asks to continue, or asks a focused follow-up.
-- `artifact_request`: user asks for a video, page, widget, lab, notes, export, or research.
-- `maintenance`: cleanup, storage, or review scheduling.
-
-2nd, choose the graph:
-
-- `new_broad_topic` or `continue_tutoring`: `tutoring-session`
-- Fresh research or source grounding: `research`
-- Durable Obsidian notes or vault update: `note-export`
-- Video, lecture, animation, or visual explanation: `manim-lecture`
-- Temporary page, zero-native surface, widget, or interactive lab: `interactive-artifact`
-- Temporary artifact cleanup: `cleanup`
-- Dependency/runtime smoke check: `smoke`
-
-3rd, build runtime input. Include the learner request, recent context, inferred stage, known preferences, requested outputs, write/render/export intent, and whether durable notes are wanted.
-
-4th, run the graph program with `circuitry_run_graph` using the exact graph filename and `inputs`. Do not set `source` for saved files. Do not use graph nicknames as filenames.
-
-Graph filenames are package-relative under this skill package's `graphs/` directory:
-
-```text
-graphs/research.circuitry.yaml
-graphs/tutoring-session.circuitry.yaml
-graphs/note-export.circuitry.yaml
-graphs/manim-lecture.circuitry.yaml
-graphs/interactive-artifact.circuitry.yaml
-graphs/cleanup.circuitry.yaml
-graphs/minimal-smoke.circuitry.yaml
+```json
+{
+  "filename": "<resolved-pi-gnosis-package>/graphs/<graph>.circuitry.yaml",
+  "inputs": {
+    "<request_resource>": {},
+    "gnosis_config": "<loaded pi-gnosis config>"
+  }
+}
 ```
 
-When calling `circuitry_run_graph`, use the resolved absolute path to that package-local graph file. If needed, resolve it with `command find ~/.pi/agent/git -path '*/darkhorseprojects/pi-gnosis/graphs/<graph>.circuitry.yaml' -print -quit` or by reading the package location from the expanded skill path.
+`gnosis_config` is unconditional. It is the source for artifact roots, note roots, runtime policy, and cleanup boundaries.
 
-5th, read the graph result with `circuitry_read_graph` for the same filename.
+For saved graph files, call `circuitry_run_graph` with `filename` and `inputs`. Do not set `source`.
 
-6th, inspect node statuses, outputs, and errors before replying.
+After each run, call `circuitry_read_graph` with the same filename and inspect `lastRun` outputs/errors before replying.
 
-7th, report the graph output in learner terms: intake question, lesson, probe, artifact status, note status, render/export status, next command when applicable, and exact blockers.
+## Graph catalog
 
-## Mandatory broad-topic intake
+| Request | Graph file | Request resource |
+| --- | --- | --- |
+| broad topic, tutoring continuation, probe answer | `graphs/tutoring-session.circuitry.yaml` | `session_request` |
+| fresh research or source grounding | `graphs/research.circuitry.yaml` | `research_request` |
+| Obsidian note export/update | `graphs/note-export.circuitry.yaml` | `export_request` |
+| video, lecture, animation, visual explanation | `graphs/manim-lecture.circuitry.yaml` | `lecture_request` |
+| page, widget, temporary lab, interactive surface | `graphs/interactive-artifact.circuitry.yaml` | `artifact_request` |
+| temporary artifact cleanup | `graphs/cleanup.circuitry.yaml` | `cleanup_request` |
+| dependency/runtime smoke check | `graphs/minimal-smoke.circuitry.yaml` | `smoke_request` |
 
-When the user asks a broad learning request and has not already provided scope/current level/modality, do **not** start teaching immediately.
+Graph filenames are package-relative under this skill package's `graphs/` directory. Use the resolved absolute path for tool calls.
 
-Run `<resolved-pi-gnosis-package>/graphs/tutoring-session.circuitry.yaml` with:
+## Turn routing
+
+1. Classify the learner request.
+2. Select the graph from the catalog.
+3. Build the request resource with learner request, stage, recent context, preferences, desired output, write/render/open intent, and notes intent.
+4. Add `gnosis_config`.
+5. Run graph.
+6. Read graph.
+7. Report the graph result: intake/probe/lesson, downstream graph route, artifact status, note status, render/export status, and blockers.
+
+If the graph runtime or a required tool fails, report that graph error and keep the same stage contract in the conversation.
+
+## Broad-topic intake
+
+For requests like "teach me X" without scope, background, modality, or memory preference, run `tutoring-session` at `stage: "intake"`.
 
 ```json
 {
@@ -82,51 +72,49 @@ Run `<resolved-pi-gnosis-package>/graphs/tutoring-session.circuitry.yaml` with:
       "desired_modality": "unknown",
       "notes_intent": "ask",
       "artifact_intent": "ask"
-    }
+    },
+    "gnosis_config": "<loaded pi-gnosis config>"
   }
 }
 ```
 
-The learner-facing response should be a compact intake prompt, not a lesson dump. It should ask for:
-
-1. scope: quick tour, full course path, specific goal, or project-driven learning
-2. current understanding: none, rusty, comfortable with algebra/calculus, or specific background
-3. learning surface: chat/ASCII, Obsidian notes, Manim video, interactive lab/widget, or mixed
-4. memory preference: whether to keep durable Obsidian notes and misconception/progress notes
-
-Ask this as one short message. Example:
+Learner-facing intake prompt:
 
 ```text
 Before I start: what kind of linear algebra path do you want?
 - scope: quick intuition / full intro / problem-solving / ML-graphics focus
 - background: none / rusty algebra / calculus-ready / already know basics
 - surface: chat+ASCII / Obsidian notes / interactive lab / Manim video / mixed
-- memory: should I keep durable notes and track misconceptions in Obsidian?
+- memory: should I keep durable notes and track misconceptions/progress in Obsidian?
 ```
 
-After the learner answers intake, pass the answer back as runtime input. Do not rely on conversation memory alone. Example for `quick, calc ready, interactive lab, no` after `teach me linear algebra`:
+After the learner answers, pass the answer back as `stage: "intake_response"`. Include the original request, interpreted scope/background/modality/notes intent, and recent context.
+
+## Probe loop
+
+Tutoring turns end with an open probe unless the selected graph is only producing an artifact/export.
+
+Allowed probe families: recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, source-check.
+
+After a learner answers a probe, run `tutoring-session` with:
 
 ```json
 {
-  "filename": "<resolved-pi-gnosis-package>/graphs/tutoring-session.circuitry.yaml",
-  "inputs": {
-    "session_request": {
-      "learner_request": "teach me linear algebra",
-      "stage": "intake_response",
-      "intake_response": "quick, calc ready, interactive lab, no",
-      "topic": "linear algebra",
-      "scope": "quick intuition",
-      "background": "calculus-ready",
-      "desired_modality": "interactive lab",
-      "notes_intent": "no",
-      "artifact_intent": "interactive lab",
-      "recent_context": "User asked: teach me linear alg. Pi asked intake: scope/background/surface/memory. User answered: quick, calc ready, interactive lab, no."
-    }
-  }
+  "session_request": {
+    "stage": "probe_response",
+    "previous_probe": "...",
+    "probe_response": "...",
+    "recent_context": "..."
+  },
+  "gnosis_config": "<loaded pi-gnosis config>"
 }
 ```
 
-If the selected route is interactive, immediately run the interactive artifact graph with a concrete artifact request. Example:
+## Artifact requests
+
+Artifact graph inputs include concrete topic, learner goal, artifact kind, write/open/render intent, notes intent, and recent context. Empty artifact inputs are invalid.
+
+Interactive artifact example:
 
 ```json
 {
@@ -144,69 +132,38 @@ If the selected route is interactive, immediately run the interactive artifact g
       "apply_writes": true,
       "open_requested": true,
       "recent_context": "User wants a quick calculus-ready interactive lab and no durable notes."
-    }
+    },
+    "gnosis_config": "<loaded pi-gnosis config>"
   }
 }
 ```
 
-If the user ignores the intake and says "just start", run `tutoring-session` again with defaults: full intro, geometric-first, chat+ASCII, notes planned but not written. The graph should still branch from learner answers instead of following a rigid syllabus.
+Manim example:
 
-## Probe loop
+```json
+{
+  "filename": "<resolved-pi-gnosis-package>/graphs/manim-lecture.circuitry.yaml",
+  "inputs": {
+    "lecture_request": {
+      "learner_request": "teach me linear algebra",
+      "topic": "linear algebra",
+      "scope": "quick intuition",
+      "background": "calculus-ready",
+      "artifact_kind": "Manim video",
+      "learner_goal": "See matrices as transformations of the plane",
+      "prior_evidence": "Learner said matrices apply transformations.",
+      "apply_writes": true,
+      "render_requested": true,
+      "open_requested": true,
+      "notes_intent": "no"
+    },
+    "gnosis_config": "<loaded pi-gnosis config>"
+  }
+}
+```
 
-Every tutoring run must end with an open probe unless the selected graph is purely exporting an artifact. Use recall, explain, transfer, contrast, debug, teach-back, worked example, predict-observe-explain, or source-check probes.
+## Notes and memory
 
-Never use multiple-choice diagnostic questions.
+Use `note-export` when the learner asks for notes, opts into memory, or authorizes a note update. If writes are not authorized, report the planned note input and ask before writing.
 
-After the learner answers a probe:
-
-1. run `tutoring-session` with `stage: "probe_response"`
-2. include the previous probe and learner answer
-3. ask the graph to classify understanding and choose the next move
-4. if a misconception or durable preference appears, ask/offer `note-export`
-
-## Media and artifact routing
-
-Do not guess the medium forever. Use intake and probe evidence to route non-linearly:
-
-- chat/ASCII/markdown: remain in `tutoring-session`
-- source-grounded explanation or citations: `research`
-- durable notes, progress, misconceptions, review prompts: `note-export`
-- visual lecture/video: `manim-lecture`
-- interactive visualization/practice: `interactive-artifact`
-
-If the user asks for a video/page/widget/lab/notes directly, route immediately to that graph with the topic, learner profile, and write/render/open intent. Empty `inputs` are invalid for pi-gnosis graph runs except dependency smoke checks.
-
-For interactive labs, use `<resolved-pi-gnosis-package>/graphs/interactive-artifact.circuitry.yaml` with `inputs.artifact_request`. Include topic, scope, background, artifact kind, learner goal, desired interaction, notes intent, `apply_writes`, and `open_requested`. Do not run this graph with `{}`.
-
-## Obsidian memory
-
-Obsidian is durable learner memory. Temporary pages, labs, videos, and chat lessons are teaching surfaces; notes are the record that survives.
-
-Use `note-export` when:
-
-- the user asks for notes
-- the user opts into memory during intake
-- a misconception, preference, goal, or progress milestone should be preserved and the user authorized writes
-- a research/video/artifact graph returns note-worthy learning material
-
-If writes are not authorized, report a planned note update and ask before writing.
-
-## Config
-
-Configuration is code-level input, not coordinator archaeology. pi-gnosis code loads and merges package config plus `~/.pi/pi-gnosis.json`. When graph nodes need config, the runner passes it as the declared `gnosis_config` runtime input.
-
-The coordinator does not search for roots, resolve artifact paths, or choose storage locations. Graph programs consume `gnosis_config` and decide their own artifact/note paths.
-
-## Manim/video
-
-For video requests:
-
-1st, select `<resolved-pi-gnosis-package>/graphs/manim-lecture.circuitry.yaml`.
-
-2nd, call `circuitry_run_graph` with that exact filename and `inputs.lecture_request` containing topic, scope, render mode, write intent, and any learner profile/probe evidence. Do not set `source`.
-
-3rd, run the graph program.
-
-4th, read the graph result.
-
-5th, report project/artifact status, render status, next render command when applicable, and exact dependency blockers.
+Obsidian notes are durable memory. Temporary videos/pages/labs are teaching artifacts unless exported through `note-export`.

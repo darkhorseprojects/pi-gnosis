@@ -33,6 +33,8 @@ const manimArgs = gnosisGraphRunArgs('manim-lecture', { topic: 'Linear algebra',
 assert.match(manimArgs.filename, /manim-lecture\.circuitry\.yaml$/);
 assert.deepEqual(manimArgs.inputs.lecture_request, { topic: 'Linear algebra', apply_writes: true });
 assert.equal(manimArgs.inputs.gnosis_config.runtime.provider, 'pi');
+const configCannotBeOmitted = gnosisGraphRunArgs('manim-lecture', { topic: 'Linear algebra' }, { includeConfig: false, config });
+assert.equal(configCannotBeOmitted.inputs.gnosis_config.runtime.provider, 'pi');
 assert.throws(() => gnosisGraphRunArgs('unknown', {}), /Unknown graph name/);
 
 for (const file of [

@@ -1,50 +1,54 @@
-# pi-gnosis Circuitry graph programs
+# pi-gnosis graph programs
 
-These files are saved Circuitry graph programs. Pi dispatches learner requests to the right graph, passes runtime inputs, runs the graph, reads the result, and reports it.
+These files are saved Circuitry v0.2 graph programs. Pi selects a graph, passes runtime inputs, runs it with `circuitry_run_graph`, reads the result with `circuitry_read_graph`, and reports the graph output.
 
-Do not edit graph YAML for each learner request. Runtime inputs are the graph args.
+## Run contract
 
-Execution shape:
-
-```txt
-graph file/current canvas/text + runtime inputs -> run result
-```
-
-Every graph declares text resources for runtime inputs. The pi-gnosis runner maps graph names to request resources and may pass resolved config through `gnosis_config` when declared.
+Every pi-gnosis run has this shape:
 
 ```json
 {
-  "filename": "graphs/manim-lecture.circuitry.yaml",
+  "filename": "<package>/graphs/<graph>.circuitry.yaml",
   "inputs": {
-    "lecture_request": {
-      "topic": "linear algebra",
-      "scope": "full intro",
-      "render": "draft-if-environment-ready",
-      "apply_writes": true
-    },
-    "gnosis_config": {
-      "paths": {}
-    }
+    "<request_resource>": {},
+    "gnosis_config": {}
   }
 }
 ```
 
-Every graph uses:
+`gnosis_config` is always present. It is loaded by pi-gnosis code from package config plus user config. Graphs use it for note roots, artifact roots, runtime policy, and cleanup boundaries.
+
+Runtime inputs are execution overlays for declared `type: text` resources. They do not rewrite graph files.
+
+## Graph catalog
+
+| File | Request resource | Primary responsibility |
+| --- | --- | --- |
+| `tutoring-session.circuitry.yaml` | `session_request` | classify a learning turn, ask intake/probe, teach one move, or route downstream |
+| `research.circuitry.yaml` | `research_request` | plan queries, fetch sources, extract claims, synthesize, prepare note input |
+| `note-export.circuitry.yaml` | `export_request` | plan and apply authorized Obsidian note writes |
+| `manim-lecture.circuitry.yaml` | `lecture_request` | plan a visual lecture, create a Manim project, preflight/render/report artifact state |
+| `interactive-artifact.circuitry.yaml` | `artifact_request` | create a temporary zero-native page/lab/widget with an active learning loop |
+| `cleanup.circuitry.yaml` | `cleanup_request` | inventory configured temporary roots and apply authorized cleanup |
+| `minimal-smoke.circuitry.yaml` | `smoke_request` | check dependency and runtime execution plumbing |
+
+## Authored format
+
+All graph files use:
 
 ```yaml
+circuitry: "0.2"
 runtime:
   provider: pi
   model: inherit
+resources:
+  request:
+    type: text
+    value: "{}"
 ```
 
-Every agent node also uses `model: inherit`.
+Top-level `nodes:`, `edges:`, `agents:`, and `inputs:` are not authored graph sections. Execution nodes and edges are derived from `resources` during normalization.
 
-## Graphs
+## Station design
 
-- Conversation tutoring: `tutoring-session.circuitry.yaml`
-- Source-grounded research: `research.circuitry.yaml`
-- Durable Obsidian notes: `note-export.circuitry.yaml`
-- Manim lecture/video artifacts: `manim-lecture.circuitry.yaml`
-- Temporary pages/widgets/labs: `interactive-artifact.circuitry.yaml`
-- Temporary artifact cleanup: `cleanup.circuitry.yaml`
-- Runtime smoke check: `minimal-smoke.circuitry.yaml`
+Use LLM agent stations for work that benefits from isolated judgment or synthesis. Use deterministic tool/code stations for path resolution, safe-root checks, file manifests, preflight checks, rendering, cleanup inventory, and schema validation.
