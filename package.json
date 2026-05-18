@@ -1,6 +1,6 @@
 {
   "name": "@darkhorseprojects/pi-gnosis",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Circuitry-first Pi package for source-grounded research, non-linear tutoring, Obsidian learning memory, and Manim lecture generation.",
   "type": "module",
   "license": "Apache-2.0",
@@ -55,7 +55,7 @@
     "list:graphs": "node bin/pi-gnosis.js graphs"
   },
   "dependencies": {
-    "@darkhorseprojects/pi-circuitry": "0.2.28",
+    "@darkhorseprojects/pi-circuitry": "0.2.29",
     "pi-web-access": "^0.10.7",
     "zero-native": "^0.2.0"
   },
@@ -63,7 +63,7 @@
     "pi-exa-search": "github:najibninaba/pi-exa-search#main"
   },
   "peerDependencies": {
-    "@darkhorseprojects/circuitry": ">=0.2.28"
+    "@darkhorseprojects/circuitry": ">=0.2.29"
   },
   "peerDependenciesMeta": {
     "@darkhorseprojects/circuitry-core": {
