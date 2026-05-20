@@ -55,7 +55,7 @@
     "list:graphs": "node bin/pi-gnosis.js graphs"
   },
   "dependencies": {
-    "@darkhorseprojects/pi-circuitry": "0.2.32",
+    "@darkhorseprojects/pi-circuitry": "0.2.33",
     "pi-web-access": "^0.10.7",
     "zero-native": "^0.2.0"
   },
@@ -63,7 +63,7 @@
     "pi-exa-search": "github:najibninaba/pi-exa-search#main"
   },
   "peerDependencies": {
-    "@darkhorseprojects/circuitry": ">=0.2.32"
+    "@darkhorseprojects/circuitry": ">=0.2.33"
   },
   "peerDependenciesMeta": {
     "@darkhorseprojects/circuitry-core": {
