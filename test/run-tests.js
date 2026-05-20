@@ -99,6 +99,23 @@ const pageArtifact = buildInteractiveArtifact({ topic: 'Claim Ledgers', kind: 'p
 assert.equal(pageArtifact.manifest.engine, 'zero-native');
 assert.equal(pageArtifact.learningSpec.designSystem, 'pi-gnosis-page');
 
+const researchGraph = getGraphProgram('research');
+for (const resourceName of [
+  'query_frontier_resource',
+  'source_selection_resource',
+  'evidence_resource',
+  'claim_resource',
+  'teaching_structure_resource',
+  'retention_resource',
+  'presentation_resource',
+]) {
+  assert.match(researchGraph, new RegExp(`${resourceName}:`));
+}
+assert.match(researchGraph, /tools: \[exa_search, web_search, arxiv_search\]/);
+assert.match(researchGraph, /note_export_recommended: bool/);
+assert.match(researchGraph, /manim_opportunities:/);
+assert.match(researchGraph, /interactive_opportunities:/);
+
 const graphsOutput = execFileSync('node', ['bin/pi-gnosis.js', 'graphs'], { encoding: 'utf8' });
 assert.match(graphsOutput, /research/);
 

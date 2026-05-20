@@ -1,7 +1,7 @@
 circuitry: "0.2"
 title: "pi-gnosis research graph program"
 description: |
-  Graph program for source-grounded learning research. Runtime input carries the research request; config input carries memory/storage settings.
+  Fast source-grounded learning research. Runtime input carries the learner request; config input carries note/artifact policy. The graph pipelines information into teachable, cited knowledge while embodying judgment in focused agent resources.
 runtime:
   provider: pi
   model: inherit
@@ -25,125 +25,228 @@ resources:
     type: text
     label: "Research contract"
     value: |
-      Prefer primary, official, and high-quality sources. Keep source claims traceable. Separate evidence from interpretation. Produce learning-oriented outputs, not generic web summaries.
-  intake_station:
+      Teach any topic from actual sources as quickly as quality allows. Prefer primary, official, reputable, and clearly relevant sources. Separate source evidence, interpretation, uncertainty, and learner-facing explanation. Keep outputs compact enough to use immediately, but structured enough to export to notes, probes, Manim, or interactive pages.
+
+  intake_resource:
     type: agent
-    identity: "Research Intake Station"
+    identity: "Research Intake Resource"
     model: inherit
     inputs: [research_request, research_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
       topic: str
+      learner_goal: str
       research_questions:
         type: list
         items: str
-      learner_goal: str
-      depth: str
+      teaching_target: str
+      speed_depth: str
       success_condition: str
     instructions: |
-      Turn the runtime input into a bounded research job with clear questions and success criteria. Output only valid JSON matching expect.
-  memory_audit_station:
+      Convert the runtime request into a clear learning/research target. Keep it broad enough to answer the learner's real question and narrow enough to source quickly. Output only valid JSON matching expect.
+
+  prior_context_resource:
     type: agent
-    identity: "Prior Knowledge Station"
+    identity: "Prior Context Resource"
     model: inherit
-    inputs: [intake_station, gnosis_config]
+    inputs: [intake_resource, gnosis_config]
     skills: [pi-gnosis]
     tools: [read, grep]
     expect:
-      known_notes:
+      relevant_notes:
         type: list
         items: str
-      gaps:
+      known_context:
         type: list
         items: str
-      terms_to_preserve:
+      learner_constraints:
+        type: list
+        items: str
+      useful_terms:
         type: list
         items: str
     instructions: |
-      Use gnosis_config to inspect relevant learner notes when useful. Identify what is already known and what the research should fill. Do not write. Output only valid JSON matching expect.
-  query_station:
+      Use gnosis_config to inspect learner notes only when useful. Do not write. Return the smallest prior-context summary that helps research and teaching. Output only valid JSON matching expect.
+
+  query_frontier_resource:
     type: agent
-    identity: "Query Design Station"
+    identity: "Query Frontier Resource"
     model: inherit
-    inputs: [intake_station, memory_audit_station, research_contract]
+    inputs: [intake_resource, prior_context_resource, research_contract]
     skills: [pi-gnosis]
     tools: []
     expect:
-      search_queries:
+      queries:
         type: list
         items: str
-      source_types:
+      source_targets:
         type: list
         items: str
-      exclusion_notes:
+      must_answer:
+        type: list
+        items: str
+      avoid:
         type: list
         items: str
     instructions: |
-      Design a small set of complementary searches that maximize source quality and reduce redundancy. Output only valid JSON matching expect.
-  discovery_station:
+      Design a compact search frontier for fast, high-coverage sourcing. Include complementary queries for definitions, mechanisms, evidence, disagreement, practical use, and teaching examples when relevant. Avoid redundant or low-quality searches. Output only valid JSON matching expect.
+
+  source_discovery_resource:
     type: agent
-    identity: "Source Discovery Station"
+    identity: "Source Discovery Resource"
     model: inherit
-    inputs: [query_station]
+    inputs: [query_frontier_resource]
     skills: [pi-gnosis]
-    tools: [exa_search, web_search]
+    tools: [exa_search, web_search, arxiv_search]
     expect:
       candidate_sources:
+        type: list
+        items: str
+      source_mix:
         type: list
         items: str
       discovery_notes:
         type: list
         items: str
     instructions: |
-      Run the planned searches. Prefer official docs, papers, reputable explainers, and primary sources. Output only valid JSON matching expect.
-  extraction_station:
+      Run the search frontier. Prefer primary papers, official documentation, standards, books or course material, reputable technical articles, and clear explainers. Return enough candidates to answer well without flooding downstream work. Output only valid JSON matching expect.
+
+  source_selection_resource:
     type: agent
-    identity: "Source Extraction Station"
+    identity: "Source Selection Resource"
     model: inherit
-    inputs: [discovery_station, intake_station]
+    inputs: [intake_resource, source_discovery_resource, research_contract]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      selected_sources:
+        type: list
+        items: str
+      rejected_sources:
+        type: list
+        items: str
+      missing_angles:
+        type: list
+        items: str
+    instructions: |
+      Select the smallest useful source set. Keep sources because they are relevant, authoritative, explanatory, or provide disagreement; reject sources that are redundant, weak, promotional, or off-target. If an important angle is missing, name it plainly. Output only valid JSON matching expect.
+
+  evidence_resource:
+    type: agent
+    identity: "Evidence Resource"
+    model: inherit
+    inputs: [intake_resource, source_selection_resource]
     skills: [pi-gnosis]
     tools: [fetch_content, web_search]
     expect:
       source_ledger:
         type: list
         items: str
-      important_claims:
+      evidence_spans:
         type: list
         items: str
-      weak_or_missing_evidence:
+      extraction_gaps:
         type: list
         items: str
     instructions: |
-      Fetch and extract the most relevant sources. Build a ledger with titles, URLs, and claims. Mark weak evidence plainly. Output only valid JSON matching expect.
-  synthesis_station:
+      Fetch and read the selected sources. Build a source ledger with titles, URLs, source kind, and why each source matters. Extract the specific evidence spans or concise evidence summaries needed for teaching. Preserve URLs and locators when available. Output only valid JSON matching expect.
+
+  claim_resource:
     type: agent
-    identity: "Learning Synthesis Station"
+    identity: "Claim Resource"
     model: inherit
-    inputs: [intake_station, memory_audit_station, extraction_station, research_contract]
+    inputs: [intake_resource, evidence_resource]
     skills: [pi-gnosis]
     tools: []
     expect:
-      explanation: str
+      claims:
+        type: list
+        items: str
+      uncertainties:
+        type: list
+        items: str
+      contradictions:
+        type: list
+        items: str
+    instructions: |
+      Convert evidence into teachable claims. Each important claim must name its supporting source or evidence item. Mark weak, contested, or incomplete evidence. Do not add claims that are not supported by the evidence_resource. Output only valid JSON matching expect.
+
+  teaching_structure_resource:
+    type: agent
+    identity: "Teaching Structure Resource"
+    model: inherit
+    inputs: [intake_resource, prior_context_resource, claim_resource]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      explanation_order:
+        type: list
+        items: str
       concept_map:
+        type: list
+        items: str
+      examples:
         type: list
         items: str
       misconceptions:
         type: list
         items: str
-      review_prompts:
+    instructions: |
+      Organize the supported claims into a teaching path. Prefer the shortest path that gives the learner usable understanding. Include prerequisite concepts, examples, and likely misconceptions only when they help. Output only valid JSON matching expect.
+
+  retention_resource:
+    type: agent
+    identity: "Retention Resource"
+    model: inherit
+    inputs: [claim_resource, teaching_structure_resource]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      recall_prompts:
         type: list
         items: str
-      citations:
+      transfer_prompts:
+        type: list
+        items: str
+      source_check_prompts:
+        type: list
+        items: str
+      review_targets:
         type: list
         items: str
     instructions: |
-      Synthesize the research for learning. Keep claims tied to the source ledger. Produce concise teaching material and review prompts. Output only valid JSON matching expect.
-  output_station:
+      Produce open-ended prompts that help the learner retain and reason with the material. Favor recall, explanation, contrast, transfer, teach-back, and source-check prompts. Do not produce multiple-choice prompts. Output only valid JSON matching expect.
+
+  presentation_resource:
     type: agent
-    identity: "Research Output Station"
+    identity: "Presentation Resource"
     model: inherit
-    inputs: [synthesis_station, extraction_station, research_request]
+    inputs: [intake_resource, claim_resource, teaching_structure_resource, retention_resource, gnosis_config]
+    skills: [pi-gnosis]
+    tools: []
+    expect:
+      lesson_summary: str
+      citations:
+        type: list
+        items: str
+      obsidian_note_plan:
+        type: list
+        items: str
+      manim_opportunities:
+        type: list
+        items: str
+      interactive_opportunities:
+        type: list
+        items: str
+    instructions: |
+      Compile the researched knowledge into a learner-facing lesson summary with citations. Also describe optional durable Obsidian note content and optional Manim or interactive page opportunities. Do not write notes or create artifacts here. Output only valid JSON matching expect.
+
+  output_resource:
+    type: agent
+    identity: "Research Output Resource"
+    model: inherit
+    inputs: [presentation_resource, evidence_resource, claim_resource, research_request]
     skills: [pi-gnosis]
     tools: []
     expect:
@@ -151,7 +254,13 @@ resources:
       source_manifest:
         type: list
         items: str
+      supported_claims:
+        type: list
+        items: str
+      review_prompts:
+        type: list
+        items: str
       note_export_recommended: bool
       next_graph_hint: str
     instructions: |
-      Package the final research output for Pi. If notes should be written, recommend the note-export graph program rather than writing here. Output only valid JSON matching expect.
+      Package the final result for Pi. Include the shortest useful answer, source manifest, supported claims, review prompts, and a next graph hint when notes, Manim, interactive artifacts, or tutoring should continue the work. Output only valid JSON matching expect.

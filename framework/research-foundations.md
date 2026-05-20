@@ -4,13 +4,13 @@ This file is a design grounding memo, not a frozen bibliography.
 
 ## Automated research pipelines
 
-Automated research/survey systems work better when they decompose the job. Agentic AutoSurvey uses specialized agents for paper search, topic mining/clustering, survey writing, and quality evaluation, reporting higher synthesis quality than a single baseline survey generator. Design implication: pi-gnosis uses separate Circuitry agents for scope, source discovery, extraction, synthesis, critique, and learner artifact routing.
+Automated research/survey systems work better when they decompose the work into explicit information products: questions, search frontiers, source sets, extracted evidence, supported claims, teaching structure, and presentation outputs. Design implication: pi-gnosis uses Circuitry resources to pipeline information, with agent resources embodying judgment where interpretation, selection, or teaching structure is needed.
 
-Citation integrity remains a hard failure mode. Generated reviews can look polished while missing disagreement, hallucinating references, or failing to connect claims to sources. Design implication: every non-obvious claim should map to source ids, and quality gates should reject unsupported synthesis.
+Citation integrity remains a hard failure mode. Generated reviews can look polished while missing disagreement, hallucinating references, or failing to connect claims to sources. Design implication: every non-obvious claim should map to source/evidence entries, and unsupported or contested claims should be marked before synthesis reaches notes or teaching outputs.
 
 ## Agentic RAG
 
-Agentic RAG and multi-agent RAG research motivate decomposing retrieval-heavy tasks into planning, source discovery, extraction, and synthesis agents. Multi-agent RAG work such as MA-RAG uses planner/extractor/QA-style roles to handle ambiguous, multi-hop information seeking. Design implication: the research graph is a Circuitry program with role-specific agents and whitelisted web tools, not a single web-search prompt.
+Agentic RAG and multi-agent RAG research motivate decomposing retrieval-heavy tasks into planning, source discovery, extraction, synthesis, and reflection. Design implication: the research graph is a Circuitry program that turns a request into durable intermediate resources rather than a single web-search prompt. Tools search and fetch; agent resources select, interpret, organize, and teach.
 
 ## Intelligent tutoring and note-backed memory
 

@@ -25,7 +25,7 @@ Runtime inputs are execution overlays for declared `type: text` resources. They 
 | File | Request resource | Primary responsibility |
 | --- | --- | --- |
 | `tutoring-session.circuitry.yaml` | `session_request` | classify a learning turn, ask intake/probe, teach one move, or route downstream |
-| `research.circuitry.yaml` | `research_request` | plan queries, fetch sources, extract claims, synthesize, prepare note input |
+| `research.circuitry.yaml` | `research_request` | pipeline a learner request into queries, selected sources, evidence, supported claims, teaching structure, retention prompts, and presentation routes |
 | `note-export.circuitry.yaml` | `export_request` | plan and apply authorized Obsidian note writes |
 | `manim-lecture.circuitry.yaml` | `lecture_request` | plan a visual lecture, create a Manim project, preflight/render/report artifact state |
 | `interactive-artifact.circuitry.yaml` | `artifact_request` | create a temporary zero-native page/lab/widget with an active learning loop |
@@ -49,6 +49,8 @@ resources:
 
 Top-level `nodes:`, `edges:`, `agents:`, and `inputs:` are not authored graph sections. Execution nodes and edges are derived from `resources` during normalization.
 
-## Station design
+## Resource design
 
-Use LLM agent stations for work that benefits from isolated judgment or synthesis. Use deterministic tool/code stations for path resolution, safe-root checks, file manifests, preflight checks, rendering, cleanup inventory, and schema validation.
+Circuitry graph programs pipeline information through resources. Agent resources embody judgment, tool-capable resources gather or inspect information, and text resources carry runtime request/config data. Keep learner-specific data in runtime inputs; keep authored graph files stable.
+
+Use deterministic package code for path resolution, safe-root checks, file manifests, preflight checks, rendering, cleanup inventory, and schema validation. Use graph resources for research planning, source discovery, evidence extraction, teaching structure, retention prompts, and presentation routing.
